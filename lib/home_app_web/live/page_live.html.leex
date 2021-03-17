@@ -1,0 +1,35 @@
+<section class="tiles__container rooms-overview">
+  <div class="wrapper">
+    <ul class="tiles__items">
+      <%= for {room, grouped_devices} <- devices_by_room(@configuration, @values) do %>
+
+        <li class="tiles__item">
+          <h2 class="tiles__item__title">
+            <i class="tiles__item__icon uil uil-<%= room.icon %>"></i>
+            <%= room.name %>
+          </h2>
+
+          <ul class="tiles__item__content room__devices device-list__items">
+            <%= for device <- grouped_devices do %>
+              <li class="device-list__item" style="<%= device.style %>">
+                <button
+                  <%= if device.click_action do %>
+                    phx-click="<%= device.click_action %>"
+                    phx-value-device-id="<%= device.id %>"
+                  <% end %>
+                  class="device device--<%= device.state %>"
+                >
+                  <i class="device__icon uil uil-<%= device.icon %>"></i>
+                  <span class="tiles__item__status device__status"><%= device.label %></span>
+                  <%= if device.button_icon do %>
+                    <i class="device__button-icon uil uil-<%= device.button_icon %>"></i>
+                  <% end %>
+                </button>
+              </li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</section>

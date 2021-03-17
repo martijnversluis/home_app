@@ -1,0 +1,189 @@
+rooms:
+  - id: none
+    name: "General"
+    icon: "home"
+  - id: master_bedroom
+    icon: "bed"
+
+characteristics:
+  - id: temperature
+    type: numeric
+    range:
+      min: 0
+      max: 40
+    decimals: 0
+    unit: "℃"
+    writable: false
+  - id: on_off
+    name: "status"
+    type: binary
+    writable: true
+  - id: activity
+    type: binary
+    writable: false
+  - id: open_closed
+    name: "status"
+    type: binary
+    values:
+      off: closed
+      on: open
+    states:
+      on: danger
+
+interfaces:
+  - id: meter_cabinet_eth
+    type: devantech_eth
+    host: 192.168.1.2
+    port: 17123
+    polling_interval: 1000
+
+device_types:
+  - id: eth_temperature
+    connection: devantech_eth_analogue_input
+    config:
+      voltage_range:
+        min: 0
+        max: 1.75
+      value_range:
+        min: -50
+        max: 125
+    characteristic: temperature
+    icon: "temperature-half"
+  - id: eth_light
+    connection: devantech_eth_relay
+    characteristic: on_off
+    icon: "lightbulb"
+  - id: eth_outlet
+    connection: devantech_eth_relay
+    characteristic: on_off
+    icon: "plug"
+  - id: eth_motion_sensor
+    connection: devantech_eth_analogue_input
+    characteristic: activity
+    icon: "webcam"
+    config:
+      voltage_range:
+        min: 0
+        max: 3.3
+      value_range:
+        min: 0
+        max: 1
+  - id: eth_window
+    connection: devantech_eth_digital_input
+    characteristic: open_closed
+    icon: "lock-open-alt"
+  - id: eth_switch
+    connection: devantech_eth_relay
+    characteristic: on_off
+    icon: power
+  - id: eth_doorbell
+    connection: devantech_eth_digital_input
+    characteristic: activity
+    icon: "bell"
+
+devices:
+  - id: master_bedroom_temperature
+    type: eth_temperature
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 2
+  - id: master_bedroom_bed_light_left
+    type: eth_light
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 1
+  - id: master_bedroom_bed_light_right
+    type: eth_light
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 3
+  - id: master_bedroom_main_light
+    type: eth_light
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 4
+  - id: master_bedroom_tv_outlet
+    name: "TV"
+    type: eth_outlet
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 5
+  - id: master_bedroom_motion_sensor
+    type: eth_motion_sensor
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 1
+  - id: master_bedroom_window
+    type: eth_window
+    room: master_bedroom
+    interface: meter_cabinet_eth
+    pin: 4
+  - id: doorbell_switch
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 32
+  - id: doorbell
+    type: eth_doorbell
+    room: none
+    interface: meter_cabinet_eth
+    pin: 2
+  - id: switch_10
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 10
+  - id: switch_11
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 11
+  - id: switch_12
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 12
+  - id: switch_13
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 13
+  - id: switch_14
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 14
+  - id: switch_15
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 15
+  - id: switch_16
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 16
+  - id: switch_17
+    type: eth_switch
+    room: none
+    interface: meter_cabinet_eth
+    pin: 17
+
+notifiers:
+  - id: slack
+    interface: http
+    config:
+      url: |
+        <%= System.get_env("SLACK_WEBHOOK") %>
+      method: post
+      content_type: json
+      body: '{"text": "<%= message %>"}'
+
+automations:
+  - id: doorbell_slack_notification
+    event: activated
+    subject: doorbell
+    action: notify
+    target: slack
+    config:
+      message: "🔔🔔 @here Someone's at the door 🔔🔔"

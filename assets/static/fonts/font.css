@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Gidolinya-Regular';
+  src: url('Gidolinya-Regular.eot');
+  src: url('Gidolinya-Regular.eot?#iefix') format('embedded-opentype'),
+       url('Gidolinya-Regular.svg#Gidolinya-Regular') format('svg'),
+       url('Gidolinya-Regular.ttf') format('truetype'),
+       url('Gidolinya-Regular.woff') format('woff'),
+       url('Gidolinya-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+

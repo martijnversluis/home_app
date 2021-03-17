@@ -1,0 +1,342 @@
+@import "../node_modules/nprogress/nprogress.css";
+@import url("https://unicons.iconscout.com/release/v3.0.6/css/line.css");
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
+
+$blue: #347bdc;
+$blue-highlight: #54a2ed;
+$white: #fff;
+$white-smoke: #f2f4f6;
+$silver: #aeb8c3;
+$grey: #8092a6;
+$dark-grey: #20232a;
+$orange: #dc7b34;
+$green: #34dc3f;
+$red: #dc3f34;
+
+$page-background: $white-smoke;
+$content-background: $white;
+$text-color: $dark-grey;
+$highlight-color: $blue;
+
+//$base-font: 'Gidolinya-Regular', sans-serif;
+$base-font: 'Lato', sans-serif;
+$wrapper-width: 1200px;
+
+@mixin sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+@mixin sr-only-focusable {
+  &:active,
+  &:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+  }
+}
+
+@font-face {
+  font-family: 'Gidolinya-Regular';
+  src: url('../static/fonts/Gidolinya-Regular.eot');
+  src: url('../static/fonts/Gidolinya-Regular.eot?#iefix') format('embedded-opentype'),
+  url('../static/fonts/Gidolinya-Regular.svg#Gidolinya-Regular') format('svg'),
+  url('../static/fonts/Gidolinya-Regular.ttf') format('truetype'),
+  url('../static/fonts/Gidolinya-Regular.woff') format('woff'),
+  url('../static/fonts/Gidolinya-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  color: $text-color;
+  font-family: $base-font;
+  font-weight: 300;
+  height: 100%;
+  margin: 0;
+}
+
+#container {
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+header {
+  box-shadow: 0 0 0.4rem $dark-grey;
+  flex: 3rem 0 0;
+  z-index: 10;
+}
+
+footer {
+  box-shadow: 0 0 0.4rem $dark-grey;
+  flex: 5rem 0 0;
+  z-index: 10;
+}
+
+main {
+  background-color: $page-background;
+  flex: auto 1 1;
+  overflow: auto;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $text-color;
+  margin: 0;
+}
+
+.wrapper {
+  margin: {
+    left: auto;
+    right: auto;
+  }
+  max-width: $wrapper-width;
+}
+
+.tiles {
+  &__items {
+    --border-radius: 0.6rem;
+
+    $column-base: 400px;
+    color: $grey;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: -1rem;
+    padding: 2rem;
+
+    $column-count: round($wrapper-width / $column-base);
+
+    @for $i from 1 through ($column-count - 1) {
+      @media (min-width: ($i)*$column-base) and (max-width: ($i+1)*$column-base) {
+        grid-template-columns: repeat($i, 1fr);
+      }
+    }
+
+    @media (min-width: ($column-count - 1)*$column-base) {
+      grid-template-columns: repeat($column-count, 1fr);
+    }
+  }
+
+  &__item {
+    background-color: $content-background;
+    border-radius: var(--border-radius);
+    flex: 1 0 18rem;
+    margin: 1rem;
+    max-width: 24rem;
+
+    &__title {
+      align-items: center;
+      background: $blue;
+      border-top-left-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
+      color: $white;
+      display: flex;
+      font-size: 1.3rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      padding: 0 1rem;
+    }
+
+    &__icon {
+      color: $white;
+      font-size: 2.6rem;
+      margin-right: 1rem;
+    }
+
+    &__content {
+      padding: 1rem;
+    }
+  }
+}
+
+.device-list {
+  &__items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 0.6rem;
+    list-style: none;
+  }
+
+  &__item {
+    flex: 1 0 6rem;
+  }
+}
+
+.device {
+  align-items: center;
+  appearance: none;
+  -webkit-appearance: none;
+  aspect-ratio: 1/1;
+  background: var(--value-color, var(--device-color, #{$grey}));
+  border: none;
+  border-radius: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 0;
+  padding: clamp(0rem, 1.3vw, 1rem);
+  width: 100%;
+
+  &--active {
+    --device-color: #{$blue};
+  }
+
+  &--danger {
+    --device-color: #{$red};
+  }
+
+  &--neutral {
+    --device-color: #{$dark-grey};
+  }
+
+  &__type {
+    @include sr-only;
+  }
+
+  &__icon {
+    color: $white;
+    display: inline-block;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    text-align: center;
+  }
+
+  &__button-icon {
+    color: $white;
+    font-size: clamp(1.8rem, 3vw, 2.2rem);
+  }
+
+  &__status {
+    color: $white;
+    display: block;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+.room {
+  &__type {
+    @include sr-only;
+  }
+
+  &__devices {
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+}
+
+/* LiveView specific classes for your customizations */
+.phx-no-feedback.invalid-feedback,
+.phx-no-feedback .invalid-feedback {
+  display: none;
+}
+
+.phx-click-loading {
+  opacity: 0.5;
+  transition: opacity 1s ease-out;
+}
+
+.phx-disconnected{
+  cursor: wait;
+}
+.phx-disconnected *{
+  pointer-events: none;
+}
+
+.phx-modal {
+  opacity: 1!important;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+
+.phx-modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.phx-modal-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.phx-modal-close:hover,
+.phx-modal-close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+/* Alerts and form errors */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.alert-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.alert p {
+  margin-bottom: 0;
+}
+.alert:empty {
+  display: none;
+}
+.invalid-feedback {
+  color: #a94442;
+  display: block;
+  margin: -1rem 0 2rem;
+}
