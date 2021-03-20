@@ -128,46 +128,6 @@ devices:
     room: none
     interface: meter_cabinet_eth
     pin: 2
-  - id: switch_10
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 10
-  - id: switch_11
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 11
-  - id: switch_12
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 12
-  - id: switch_13
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 13
-  - id: switch_14
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 14
-  - id: switch_15
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 15
-  - id: switch_16
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 16
-  - id: switch_17
-    type: eth_switch
-    room: none
-    interface: meter_cabinet_eth
-    pin: 17
 
 notifiers:
   - id: slack
