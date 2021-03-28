@@ -24,7 +24,7 @@ defmodule HomeApp.Configuration do
     |> cast_embed(:devices)
     |> cast_embed(:notifiers)
     |> cast_embed(:automations)
-    |> validate_ids(:device_types, :characteristic, :characteristics)
+    |> validate_ids(:device_types, :characteristics, :characteristics)
     |> validate_ids(:devices, :type, :device_types)
     |> validate_ids(:devices, :room, :rooms)
     |> validate_ids(:devices, :interface, :interfaces)
@@ -77,7 +77,6 @@ defmodule HomeApp.Configuration do
     device = get_device(configuration, device_id)
     device_type = get_device_type(configuration, device.type)
     interface = get_interface(configuration, device.interface)
-    characteristic = get_characteristic(configuration, device_type.characteristic)
 
     %{
       id: device_id,
@@ -88,7 +87,8 @@ defmodule HomeApp.Configuration do
       pin: device.pin,
       connection: device_type.connection,
       config: device_type.config,
-      characteristic_type: characteristic.type
+      device_type: device_type,
+      characteristics: get_characteristics(configuration, device_type.characteristics)
     }
   end
 
@@ -100,6 +100,10 @@ defmodule HomeApp.Configuration do
         Enum.filter(devices, fn %{interface: device_interface} = _device -> device_interface == interface_id end)
       }
     end)
+  end
+
+  def get_characteristics(configuration, characteristic_ids) do
+    Enum.map(characteristic_ids, fn characteristic_id -> get_characteristic(configuration, characteristic_id) end)
   end
 
   def get_characteristic(configuration, characteristic_id), do: find(configuration, :characteristics, characteristic_id)

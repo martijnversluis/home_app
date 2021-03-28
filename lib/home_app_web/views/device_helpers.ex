@@ -20,29 +20,51 @@ defmodule HomeAppWeb.DeviceHelpers do
     |> Enum.sort_by(fn {room, _devices} -> room.name end)
   end
 
-  defp device_info(%{} = device, %{} = configuration, value) do
-    device_type = Configuration.get_device_type(configuration, device.type)
-    characteristic = Configuration.get_characteristic(configuration, device_type.characteristic)
+  defp device_info(%{id: device_id} = device, %{} = configuration, value) do
+    %{
+      device_type: %{icon: icon},
+      characteristics: characteristics
+    } = Configuration.get_device_info(configuration, device_id)
 
     %{
-      icon: device_type.icon,
-      characteristic: characteristic.id,
-      state: state(device, characteristic, value),
-      label: label(device, characteristic, value),
-      style: style(device, characteristic, value),
-      click_action: click_action(characteristic, value),
-      button_icon: button_icon(characteristic, value)
+      icon: icon,
+      characteristic: characteristic_id(characteristics),
+      state: state(device, characteristics, value),
+      label: label(device, characteristics, value),
+      style: style(device, characteristics, value),
+      click_action: click_action(characteristics, value),
+      button_icon: button_icon(characteristics, value)
     }
     |> Map.merge(device)
+  end
+
+  defp characteristic_id(characteristics) when is_list(characteristics) do
+    characteristics |> List.first() |> characteristic_id()
+  end
+
+  defp characteristic_id(%{id: id} = _characteristic), do: id
+
+  defp button_icon(characteristics, value) when is_list(characteristics) do
+    button_icon(List.first(characteristics), value)
   end
 
   defp button_icon(%{type: "binary", writable: true}, true = _value), do: "toggle-on"
   defp button_icon(%{type: "binary", writable: true}, false = _value), do: "toggle-off"
   defp button_icon(%{} = _characteristic, _value), do: nil
 
+  defp click_action(characteristics, value) when is_list(characteristics) do
+    characteristic = List.first(characteristics)
+    click_action(characteristic, get_value(value, characteristic))
+  end
+
   defp click_action(%{type: "binary", writable: true}, true = _value), do: "deactivate"
   defp click_action(%{type: "binary", writable: true}, false = _value), do: "activate"
   defp click_action(%{writable: false}, _value), do: nil
+
+  defp label(device, characteristics, value) when is_list(characteristics) do
+    characteristic = List.first(characteristics)
+    label(device, characteristic, get_value(value, characteristic))
+  end
 
   defp label(%{name: device_name} = _device, %{type: "binary"} = _characteristic, _value), do: device_name
 
@@ -50,13 +72,18 @@ defmodule HomeAppWeb.DeviceHelpers do
     "#{round_numeric_value(value, decimals)} #{unit}"
   end
 
-  defp round_numeric_value(value, nil), do: value
-  defp round_numeric_value(value, decimals) when is_integer(decimals), do: Float.ceil(value, decimals)
-
   defp label(%{} = _device, %{type: "timestamp"} = _characteristic, value) do
     "#{value}"
     |> Timex.parse!("{s-epoch}")
     |> Timex.format!("{relative}", :relative)
+  end
+
+  defp round_numeric_value(value, nil), do: value
+  defp round_numeric_value(value, decimals) when is_integer(decimals), do: Float.ceil(value, decimals)
+
+  defp state(device, characteristics, value) when is_list(characteristics) do
+    characteristic = List.first(characteristics)
+    state(device, characteristic, get_value(value, characteristic))
   end
 
   defp state(
@@ -91,6 +118,11 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp state(%{} = _device, %{} = _characteristic, _value), do: "neutral"
 
+  defp style(device, characteristics, value) when is_list(characteristics) do
+    characteristic = List.first(characteristics)
+    style(device, characteristic, get_value(value, characteristic))
+  end
+
   defp style(%{} = _device, %{type: "numeric"} = characteristic, value) do
     scale = numeric_to_scale(characteristic, value)
     min_hue = 0
@@ -112,4 +144,6 @@ defmodule HomeAppWeb.DeviceHelpers do
       _ -> number
     end
   end
+
+  defp get_value(%{} = value, %{source: source} = characteristic), do: Map.fetch!(value, source)
 end

@@ -7,6 +7,7 @@ rooms:
 
 characteristics:
   - id: temperature
+    source: voltage
     type: numeric
     range:
       min: 0
@@ -14,14 +15,20 @@ characteristics:
     decimals: 0
     unit: "℃"
     writable: false
-  - id: on_off
+  - id: on
     name: "status"
     type: binary
     writable: true
   - id: activity
+    source: on
+    type: binary
+    writable: false
+  - id: analog_activity
+    source: voltage
     type: binary
     writable: false
   - id: open_closed
+    source: on
     name: "status"
     type: binary
     values:
@@ -47,19 +54,19 @@ device_types:
       value_range:
         min: -50
         max: 125
-    characteristic: temperature
+    characteristics: [temperature]
     icon: "temperature-half"
   - id: eth_light
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on, brightness]
     icon: "lightbulb"
   - id: eth_outlet
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on]
     icon: "plug"
   - id: eth_motion_sensor
     connection: devantech_eth_analogue_input
-    characteristic: activity
+    characteristics: [analog_activity]
     icon: "webcam"
     config:
       voltage_range:
@@ -70,15 +77,15 @@ device_types:
         max: 1
   - id: eth_window
     connection: devantech_eth_digital_input
-    characteristic: open_closed
+    characteristics: [open_closed]
     icon: "lock-open-alt"
   - id: eth_switch
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on]
     icon: power
   - id: eth_doorbell
     connection: devantech_eth_digital_input
-    characteristic: activity
+    characteristics: [activity]
     icon: "bell"
 
 devices:
@@ -143,6 +150,7 @@ automations:
   - id: doorbell_slack_notification
     event: activated
     subject: doorbell
+    characteristic: on
     action: notify
     target: slack
     config:

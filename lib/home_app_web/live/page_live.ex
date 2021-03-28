@@ -15,7 +15,7 @@ defmodule HomeAppWeb.PageLive do
       :ok,
       assign(socket, %{
         configuration: configuration,
-        values: get_values(configuration)
+        values: get_values(configuration) |> IO.inspect(label: "values")
       })}
   end
 

@@ -5,6 +5,7 @@ defmodule HomeApp.Configuration.Characteristic do
   schema "" do
     field(:id, :string)
     field(:name, :string)
+    field(:source, :string, default: nil)
     field(:unit, :string)
     field(:writable, :boolean, default: false)
     field(:type, :string)
@@ -16,7 +17,7 @@ defmodule HomeApp.Configuration.Characteristic do
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :name, :unit, :writable, :type, :decimals], empty_values: ["", nil])
+    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals], empty_values: ["", nil])
     |> cast_embed(:range)
     |> cast_embed(:values)
     |> cast_embed(:states)
@@ -28,6 +29,7 @@ defmodule HomeApp.Configuration.Characteristic do
     end)
     |> set_default_binary_attribute(:values, %{on: "on", off: "off"})
     |> set_default_binary_attribute(:states, %{on: "active", off: "inactive"})
+    |> set_default_source()
   end
 
   defp set_default_binary_attribute(changeset, field, default_value) do
@@ -37,6 +39,15 @@ defmodule HomeApp.Configuration.Characteristic do
           %{on: _, off: _} -> changeset
           _ -> Ecto.Changeset.put_change(changeset, field, default_value)
         end
+      _ -> changeset
+    end
+  end
+
+  defp set_default_source(changeset) do
+    case Ecto.Changeset.fetch_field!(changeset, :source) do
+      nil ->
+        id = Ecto.Changeset.fetch_field!(changeset, :id)
+        Ecto.Changeset.put_change(changeset, :source, id)
       _ -> changeset
     end
   end

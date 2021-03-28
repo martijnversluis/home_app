@@ -45,17 +45,31 @@ defmodule DevantechETH.Driver do
       {:ok, voltage} ->
         ratio = voltage / (max_voltage - min_voltage)
         value = min_value + ((max_value - min_value) * ratio)
-        {:reply, {:ok, value}, client}
+        {
+          :reply,
+          {:ok, %{"voltage" => value}},
+          client
+        }
       {:error, error} ->
         {:reply, {:error, error}, client}
     end
   end
 
   def handle_call({:get_value, %{pin: pin, connection: "devantech_eth_relay"} = _device}, _, client) do
-    {:reply, Client.get_relay(client, pin), client}
+    case Client.get_relay(client, pin) do
+      {:ok, state} ->
+        {:reply, {:ok, %{"on" => state, "brightness" => 33}}, client}
+      {:error, error} ->
+        {:reply, {:error, error}, client}
+    end
   end
 
   def handle_call({:get_value, %{pin: pin, connection: "devantech_eth_digital_input"} = _device}, _, client) do
-    {:reply, Client.get_input(client, pin), client}
+    case Client.get_input(client, pin) do
+      {:ok, state} ->
+        {:reply, {:ok, %{"on" => state}}, client}
+      {:error, error} ->
+        {:reply, {:error, error}, client}
+    end
   end
 end
