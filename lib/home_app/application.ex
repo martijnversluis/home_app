@@ -6,6 +6,9 @@ defmodule HomeApp.Application do
   use Application
 
   def start(_type, _args) do
+    Dotenv.load
+    Mix.Task.run("loadconfig")
+
     children = [
       HomeAppWeb.Telemetry,
       {Phoenix.PubSub, name: HomeApp.PubSub},
