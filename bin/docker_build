@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+source .env
+docker build --build-arg SECRET_KEY_BASE -t home_app .
