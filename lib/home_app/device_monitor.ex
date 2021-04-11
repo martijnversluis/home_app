@@ -1,6 +1,13 @@
 defmodule HomeApp.DeviceMonitor do
-  alias HomeApp.{Configuration, ConfigurationAgent, DeviceStateAgent}
+  alias HomeApp.{Configuration, ConfigurationAgent, DeviceDriver, DeviceStateAgent}
   use GenServer
+
+  def child_spec({driver, %{id: interface_id, type: interface_type} = interface, devices}) do
+    %{
+      id: String.to_atom("#{__MODULE__}_#{interface_type}_#{interface_id}"),
+      start: {__MODULE__, :start_link, [{driver, interface, devices}]}
+    }
+  end
 
   def start_link({driver, interface, devices}) do
     GenServer.start_link(__MODULE__, {driver, interface, devices}, name: name(interface))
@@ -25,10 +32,11 @@ defmodule HomeApp.DeviceMonitor do
   end
 
   defp update_device(driver, %{id: device_id} = _device) do
-    response =
+    device_info =
       ConfigurationAgent.get_configuration()
       |> Configuration.get_device_info(device_id)
-      |> driver.get_value()
+
+    response = DeviceDriver.get_value(driver, device_info)
 
     case response do
       {:ok, value} -> DeviceStateAgent.set_device_state(device_id, value)

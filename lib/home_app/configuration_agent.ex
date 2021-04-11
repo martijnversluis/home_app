@@ -18,6 +18,6 @@ defmodule HomeApp.ConfigurationAgent do
   end
 
   def name() do
-    Agent.agent()
+    Agent.agent
   end
 end

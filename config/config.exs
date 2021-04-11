@@ -12,7 +12,8 @@ use Mix.Config
 config :home_app, :yml_config, "config/config.yml"
 
 config :home_app, :device_drivers,
-       devantech_eth: DevantechETH.Driver
+       devantech_eth: DevantechETH.Driver,
+       hue: Hue.Driver
 
 config :home_app, :notifiers,
        http: HTTPNotifier

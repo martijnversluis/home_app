@@ -11,20 +11,17 @@ defmodule HTTPNotifier do
         %{} = action_config,
         %HomeApp.Event{subject: device_info, data: event_data}
       ) do
+    eex_bindings = bindings(device_info, action_config, event_data)
+
     %HTTPoison.Request{
       method: Map.get(notifier_config, :method, "get"),
-      url: notifier_config.url,
-      body: compile_body(notifier_config, bindings(device_info, action_config, event_data)),
+      url: EEx.eval_string(notifier_config.url, eex_bindings),
+      body: EEx.eval_string(Map.get(notifier_config, :body, ""), eex_bindings),
       headers: headers(notifier_config)
     }
     |> IO.inspect(label: "HTTP request")
     |> HTTPoison.request()
     |> IO.inspect(label: "HTTP response")
-  end
-
-  defp compile_body(interface_config, bindings) do
-    Map.get(interface_config, :body, "")
-    |> EEx.eval_string(bindings)
   end
 
   defp bindings(device_info, action_config, event_data) do

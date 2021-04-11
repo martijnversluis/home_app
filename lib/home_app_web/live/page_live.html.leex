@@ -19,10 +19,16 @@
                   <% end %>
                   class="device device--<%= device.state %>"
                 >
-                  <i class="device__icon uil uil-<%= device.icon %>"></i>
-                  <span class="tiles__item__status device__status"><%= device.label %></span>
-                  <%= if device.button_icon do %>
-                    <i class="device__button-icon uil uil-<%= device.button_icon %>"></i>
+                  <div class="device__inner">
+                    <i class="device__icon uil uil-<%= device.icon %>"></i>
+                    <span class="tiles__item__status device__status"><%= device.label %></span>
+                    <%= if device.button_icon do %>
+                      <i class="device__button-icon uil uil-<%= device.button_icon %>"></i>
+                    <% end %>
+                  </div>
+
+                  <%= for characteristic <- device.characteristics do %>
+                    <%= device_control(device, characteristic, get_in(@values, [device.id, characteristic.id])) %>
                   <% end %>
                 </button>
               </li>

@@ -17,8 +17,27 @@ import {Socket} from "phoenix"
 import NProgress from "nprogress"
 import {LiveSocket} from "phoenix_live_view"
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+const hooks = {
+  NumericSlider: {
+    mounted() {
+      this.el.addEventListener("change", e => {
+        const meta = this.__view.extractMeta(this.el, {});
+
+        this.pushEvent(
+          "device_change",
+          {
+            characteristic: meta.characteristic,
+            device_id: meta['device-id'],
+            value: meta.value
+          }
+        );
+      })
+    }
+  }
+}
+
+const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+const liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks});
 
 // Show progress bar on live navigation and form submits
 window.addEventListener("phx:page-loading-start", info => NProgress.start())
@@ -32,4 +51,4 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
+liveSocket.enableDebug();

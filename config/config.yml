@@ -4,9 +4,23 @@ rooms:
     icon: "home"
   - id: master_bedroom
     icon: "bed"
+  - id: study
+    icon: "books"
+  - id: living_room
+    icon: "lamp"
+  - id: meter_cabinet
+    icon: "server-alt"
+  - id: corridor
+  - id: hallway
+    icon: "archway"
+  - id: bathroom
+    icon: "bath"
+  - id: kitchen
+    icon: "restaurant"
 
 characteristics:
   - id: temperature
+    source: voltage
     type: numeric
     range:
       min: 0
@@ -14,14 +28,25 @@ characteristics:
     decimals: 0
     unit: "℃"
     writable: false
-  - id: on_off
+  - id: on
     name: "status"
     type: binary
     writable: true
+  - id: binary_input
+    name: "status"
+    source: on
+    type: binary
+    writable: false
   - id: activity
+    source: on
+    type: binary
+    writable: false
+  - id: analog_activity
+    source: voltage
     type: binary
     writable: false
   - id: open_closed
+    source: on
     name: "status"
     type: binary
     values:
@@ -29,6 +54,13 @@ characteristics:
       on: open
     states:
       on: danger
+  - id: brightness
+    type: numeric
+    range:
+      min: 0
+      max: 254
+    unit: "%"
+    writable: true
 
 interfaces:
   - id: meter_cabinet_eth
@@ -36,6 +68,12 @@ interfaces:
     host: 192.168.1.2
     port: 17123
     polling_interval: 1000
+  - id: hue_bridge
+    type: hue
+    host: 192.168.1.53
+    polling_interval: 1000
+    config:
+      username: JkqLg4Gx5CpGBFegff4KJl23M8O6KyjGWHziEIhW
 
 device_types:
   - id: eth_temperature
@@ -47,19 +85,19 @@ device_types:
       value_range:
         min: -50
         max: 125
-    characteristic: temperature
+    characteristics: [temperature]
     icon: "temperature-half"
   - id: eth_light
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on, brightness]
     icon: "lightbulb"
   - id: eth_outlet
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on]
     icon: "plug"
   - id: eth_motion_sensor
     connection: devantech_eth_analogue_input
-    characteristic: activity
+    characteristics: [analog_activity]
     icon: "webcam"
     config:
       voltage_range:
@@ -70,52 +108,62 @@ device_types:
         max: 1
   - id: eth_window
     connection: devantech_eth_digital_input
-    characteristic: open_closed
+    characteristics: [open_closed]
     icon: "lock-open-alt"
+  - id: eth_digital_input
+    connection: devantech_eth_digital_input
+    characteristics: [binary_input]
+    icon: "eye"
   - id: eth_switch
     connection: devantech_eth_relay
-    characteristic: on_off
+    characteristics: [on]
     icon: power
   - id: eth_doorbell
     connection: devantech_eth_digital_input
-    characteristic: activity
+    characteristics: [activity]
     icon: "bell"
+  - id: hue_go
+    connection: hue_go
+    characteristics: [on, brightness]
+    icon: "lightbulb"
+  - id: hue_dimmable_light
+    connection: hue_dimmable_light
+    characteristics: [on, brightness]
+    icon: "lightbulb"
+  - id: hue_outlet
+    connection: hue_outlet
+    characteristics: [on]
+    icon: "plug"
 
 devices:
-  - id: master_bedroom_temperature
+  - id: meter_cabinet_temperature
     type: eth_temperature
-    room: master_bedroom
+    room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 2
-  - id: master_bedroom_bed_light_left
-    type: eth_light
-    room: master_bedroom
+  - id: meter_cabinet_relay_1
+    type: eth_outlet
+    room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 1
-  - id: master_bedroom_bed_light_right
-    type: eth_light
-    room: master_bedroom
+  - id: meter_cabinet_motion_sensor
+    type: eth_motion_sensor
+    room: meter_cabinet
+    interface: meter_cabinet_eth
+    pin: 1
+  - id: meter_cabinet_input_1
+    type: eth_digital_input
+    room: meter_cabinet
+    interface: meter_cabinet_eth
+    pin: 1
+  - id: meter_cabinet_input_3
+    type: eth_digital_input
+    room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 3
-  - id: master_bedroom_main_light
-    type: eth_light
-    room: master_bedroom
-    interface: meter_cabinet_eth
-    pin: 4
-  - id: master_bedroom_tv_outlet
-    name: "TV"
-    type: eth_outlet
-    room: master_bedroom
-    interface: meter_cabinet_eth
-    pin: 5
-  - id: master_bedroom_motion_sensor
-    type: eth_motion_sensor
-    room: master_bedroom
-    interface: meter_cabinet_eth
-    pin: 1
-  - id: master_bedroom_window
-    type: eth_window
-    room: master_bedroom
+  - id: meter_cabinet_input_4
+    type: eth_digital_input
+    room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 4
   - id: doorbell_switch
@@ -128,6 +176,72 @@ devices:
     room: none
     interface: meter_cabinet_eth
     pin: 2
+  - id: hue_go_desk
+    type: hue_go
+    room: study
+    interface: hue_bridge
+    pin: 9
+  - id: living_room_light
+    type: hue_dimmable_light
+    room: living_room
+    interface: hue_bridge
+    pin: 2
+  - id: hallway_light
+    type: hue_dimmable_light
+    room: hallway
+    interface: hue_bridge
+    pin: 7
+  - id: bathroom_light
+    type: hue_dimmable_light
+    room: bathroom
+    interface: hue_bridge
+    pin: 8
+  - id: kitchen_table_light_1
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 10
+  - id: kitchen_table_light_2
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 11
+  - id: kitchen_table_light_3
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 12
+  - id: kitchen_table_light_4
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 13
+  - id: kitchen_table_light_5
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 14
+  - id: kitchen_table_light_6
+    type: hue_dimmable_light
+    room: kitchen
+    interface: hue_bridge
+    pin: 15
+  - id: tv_outlet
+    type: hue_outlet
+    room: living_room
+    interface: hue_bridge
+    pin: 17
+
+groups:
+  - id: kitchen_table_lights
+    room: kitchen
+    devices:
+    - kitchen_table_light_1
+    - kitchen_table_light_2
+    - kitchen_table_light_3
+    - kitchen_table_light_4
+    - kitchen_table_light_5
+    - kitchen_table_light_6
 
 notifiers:
   - id: slack
@@ -143,6 +257,7 @@ automations:
   - id: doorbell_slack_notification
     event: activated
     subject: doorbell
+    characteristic: on
     action: notify
     target: slack
     config:

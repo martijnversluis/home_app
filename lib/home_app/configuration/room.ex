@@ -5,12 +5,12 @@ defmodule HomeApp.Configuration.Room do
   schema "" do
     field(:id, :string)
     field(:name, :string)
-    field(:icon, :string)
+    field(:icon, :string, default: nil)
   end
 
   def changeset(struct, attributes) do
     cast(struct, attributes, [:id, :name, :icon], empty_values: ["", nil])
-    |> validate_required([:id, :icon])
+    |> validate_required([:id])
     |> Configuration.ensure_name()
   end
 end
