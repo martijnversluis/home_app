@@ -1,15 +1,24 @@
 defmodule HomeApp.DeviceDriver do
-  def dispatch(%{interface_type: interface_type} = device, action) do
+  def dispatch(%{interface_type: interface_type} = device, action, parameters \\ %{}) do
     driver = get_driver!(interface_type)
 
     case action do
       "activate" -> driver.activate(device)
       "deactivate" -> driver.deactivate(device)
+      "change" -> driver.change(device, parameters)
     end
   end
 
   def get_value(%{interface_type: interface_type} = device) do
-    get_driver!(interface_type).get_value(device)
+    get_value(get_driver!(interface_type), device)
+  end
+
+  def get_value(driver, %{interface_type: interface_type} = device) do
+    try do
+      driver.get_value(device)
+    catch
+      :exit, value -> {:error, :no_connection}
+    end
   end
 
   def get_driver(interface_type) do

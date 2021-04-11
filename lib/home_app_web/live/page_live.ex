@@ -26,9 +26,33 @@ defmodule HomeAppWeb.PageLive do
 
   @impl true
   def handle_event(action, %{"device-id" => device_id}, socket) when action in ["activate", "deactivate"] do
-    device_info = Configuration.get_device_info(get_configuration(), device_id)
-    DeviceDriver.dispatch(device_info, action)
+    trigger_device_change(device_id, socket, fn device_info ->
+      DeviceDriver.dispatch(device_info, action)
+    end)
+  end
 
+  @impl true
+  def handle_event(
+        "device_change",
+        %{
+          "characteristic" => characteristic,
+          "device_id" => device_id,
+          "value" => value
+        },
+        socket
+      ) do
+    trigger_device_change(device_id, socket, fn device_info ->
+      DeviceDriver.dispatch(device_info, "change", %{characteristic => value})
+    end)
+  end
+
+  defp trigger_device_change(device_id, socket, fun) do
+    device_info = Configuration.get_device_info(get_configuration(), device_id)
+    fun.(device_info)
+    reload_device_state(device_info, socket)
+  end
+
+  defp reload_device_state(%{id: device_id} = device_info, socket) do
     case DeviceDriver.get_value(device_info) do
       {:ok, value} ->
         IO.inspect(value, label: "New value for #{device_id}")

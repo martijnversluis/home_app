@@ -24,7 +24,7 @@ defmodule HomeApp.EventHandler do
            characteristic: characteristic_id,
            event: event,
            subject: subject
-         } = automation,
+         } = _automation,
          %{
            subject: %{
              characteristics: characteristics,

@@ -1,5 +1,5 @@
 defmodule HomeApp.Configuration do
-  alias HomeApp.Configuration.{Automation, Characteristic, Device, DeviceType, Interface, Notifier, Room}
+  alias HomeApp.Configuration.{Automation, Characteristic, Device, DeviceType, Group, Interface, Notifier, Room}
 
   import Ecto.Changeset
   use Ecto.Schema
@@ -12,6 +12,7 @@ defmodule HomeApp.Configuration do
     embeds_many(:devices, Device)
     embeds_many(:notifiers, Notifier)
     embeds_many(:automations, Automation)
+    embeds_many(:groups, Group)
   end
 
   def changeset(struct, attributes) do
@@ -24,10 +25,12 @@ defmodule HomeApp.Configuration do
     |> cast_embed(:devices)
     |> cast_embed(:notifiers)
     |> cast_embed(:automations)
+    |> cast_embed(:groups)
     |> validate_ids(:device_types, :characteristics, :characteristics)
     |> validate_ids(:devices, :type, :device_types)
     |> validate_ids(:devices, :room, :rooms)
     |> validate_ids(:devices, :interface, :interfaces)
+    |> validate_ids(:groups, :devices, :devices)
   end
 
   def load!(filename) do
@@ -58,6 +61,7 @@ defmodule HomeApp.Configuration do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+    |> IO.inspect(label: "traversed errors")
     |> Enum.reduce("", fn {k, v}, acc ->
       joined_errors = Enum.join(v, "; ")
       "#{acc}#{k}: #{joined_errors}\n"
@@ -86,7 +90,7 @@ defmodule HomeApp.Configuration do
       port: interface.port,
       pin: device.pin,
       connection: device_type.connection,
-      config: device_type.config,
+      config: Map.merge(device_type.config, interface.config),
       device_type: device_type,
       characteristics: get_characteristics(configuration, device_type.characteristics)
     }
