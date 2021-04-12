@@ -186,9 +186,9 @@ devices:
     room: living_room
     interface: hue_bridge
     pin: 2
-  - id: hallway_light
+  - id: corridor_light
     type: hue_dimmable_light
-    room: hallway
+    room: corridor
     interface: hue_bridge
     pin: 7
   - id: bathroom_light
@@ -226,6 +226,11 @@ devices:
     room: kitchen
     interface: hue_bridge
     pin: 15
+  - id: hallway_light
+    type: hue_dimmable_light
+    room: hallway
+    interface: hue_bridge
+    pin: 16
   - id: tv_outlet
     type: hue_outlet
     room: living_room
