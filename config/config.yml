@@ -236,6 +236,11 @@ devices:
     room: living_room
     interface: hue_bridge
     pin: 17
+  - id: kitchen_counter_lights
+    type: hue_outlet
+    room: kitchen
+    interface: hue_bridge
+    pin: 18
 
 groups:
   - id: kitchen_table_lights
