@@ -20,7 +20,7 @@ $highlight-color: $blue;
 
 //$base-font: 'Gidolinya-Regular', sans-serif;
 $base-font: 'Lato', sans-serif;
-$wrapper-width: 1200px;
+$wrapper-width: 2000px;
 
 @mixin sr-only {
   border: 0;
@@ -154,7 +154,6 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--border-radius);
     flex: 1 0 18rem;
     margin: 1rem;
-    max-width: 24rem;
 
     &__title {
       align-items: center;
