@@ -52,10 +52,16 @@ defmodule HomeAppWeb.PageLive do
     reload_device_state(device_info, socket)
   end
 
+  defp reload_device_state([device | other_devices], socket) do
+    {:noreply, socket} = reload_device_state(device, socket)
+    reload_device_state(other_devices, socket)
+  end
+
+  defp reload_device_state([] = _devices, socket), do: {:noreply, socket}
+
   defp reload_device_state(%{id: device_id} = device_info, socket) do
     case DeviceDriver.get_value(device_info) do
       {:ok, value} ->
-        IO.inspect(value, label: "New value for #{device_id}")
         {
           :noreply,
           socket
@@ -66,7 +72,6 @@ defmodule HomeAppWeb.PageLive do
         {
           :noreply,
           socket
-          |> put_flash(:error, "Could not read the value for \"#{device_id}\"")
         }
     end
   end

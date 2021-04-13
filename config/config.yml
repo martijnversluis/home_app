@@ -176,7 +176,7 @@ devices:
     room: none
     interface: meter_cabinet_eth
     pin: 2
-  - id: hue_go_desk
+  - id: study_hue_go
     type: hue_go
     room: study
     interface: hue_bridge
@@ -245,6 +245,7 @@ devices:
 groups:
   - id: kitchen_table_lights
     room: kitchen
+    icon: "lightbulb"
     devices:
     - kitchen_table_light_1
     - kitchen_table_light_2
@@ -252,6 +253,11 @@ groups:
     - kitchen_table_light_4
     - kitchen_table_light_5
     - kitchen_table_light_6
+  - id: study_lights
+    room: study
+    icon: "lightbulb"
+    devices:
+    - study_hue_go
 
 notifiers:
   - id: slack

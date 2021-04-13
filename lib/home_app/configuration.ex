@@ -77,23 +77,34 @@ defmodule HomeApp.Configuration do
     put_change(changeset, :name, get_name(changeset))
   end
 
-  def get_device_info(configuration, device_id) do
-    device = get_device(configuration, device_id)
-    device_type = get_device_type(configuration, device.type)
-    interface = get_interface(configuration, device.interface)
+  def get_device_info(configuration, device_ids) when is_list(device_ids) do
+    Enum.map(device_ids, fn device_id -> get_device_info(configuration, device_id) end)
+  end
 
-    %{
-      id: device_id,
-      interface: device.interface,
-      interface_type: interface.type,
-      host: interface.host,
-      port: interface.port,
-      pin: device.pin,
-      connection: device_type.connection,
-      config: Map.merge(device_type.config, interface.config),
-      device_type: device_type,
-      characteristics: get_characteristics(configuration, device_type.characteristics)
-    }
+  def get_device_info(configuration, device_id) do
+    case get_group(configuration, device_id) do
+      %{devices: device_ids} ->
+        get_device_info(configuration, device_ids)
+      nil ->
+        device = get_device(configuration, device_id)
+        device_type = get_device_type(configuration, device.type)
+        interface = get_interface(configuration, device.interface)
+
+        %{
+          id: device_id,
+          type: "device",
+          interface: device.interface,
+          interface_type: interface.type,
+          host: interface.host,
+          port: interface.port,
+          pin: device.pin,
+          connection: device_type.connection,
+          config: Map.merge(device_type.config, interface.config),
+          device_type: device_type,
+          characteristic_ids: device_type.characteristics,
+          characteristics: get_characteristics(configuration, device_type.characteristics)
+        }
+    end
   end
 
   def get_interfaces_with_devices(%{devices: devices, interfaces: interfaces} = _configuration) do
@@ -115,6 +126,7 @@ defmodule HomeApp.Configuration do
   def get_device_type(configuration, device_type), do: find(configuration, :device_types, device_type)
   def get_interface(configuration, interface_id), do: find(configuration, :interfaces, interface_id)
   def get_room(configuration, room_id), do: find(configuration, :rooms, room_id)
+  def get_group(configuration, group_id), do: find(configuration, :groups, group_id)
 
   defp find(configuration, collection, id) do
     configuration

@@ -11,7 +11,7 @@
 
           <ul class="tiles__item__content room__devices device-list__items">
             <%= for device <- grouped_devices do %>
-              <li class="device-list__item" style="<%= device.style %>">
+              <li class="device-list__item" style="<%= Map.get(device, :style, "") %>">
                 <button
                   <%= if device.click_action do %>
                     phx-click="<%= device.click_action %>"
@@ -28,7 +28,7 @@
                   </div>
 
                   <%= for characteristic <- device.characteristics do %>
-                    <%= device_control(device, characteristic, get_in(@values, [device.id, characteristic.id])) %>
+                    <%= device_control(device, characteristic) %>
                   <% end %>
                 </button>
               </li>
