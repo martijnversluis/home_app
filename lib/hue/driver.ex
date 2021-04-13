@@ -28,7 +28,7 @@ defmodule Hue.Driver do
         client
       ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
-      Client.login(host, username)
+      login(host, username)
       |> Client.update_light(pin, %{on: false})
 
     {:reply, {:ok, result}, client}
@@ -43,7 +43,7 @@ defmodule Hue.Driver do
         client
       ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
-      Client.login(host, username)
+      login(host, username)
       |> Client.update_light(pin, %{on: true})
 
     {:reply, {:ok, result}, client}
@@ -58,7 +58,7 @@ defmodule Hue.Driver do
         client
       ) when connection in ["hue_dimmable_light", "hue_go"] do
     state =
-      Client.login(host, username)
+      login(host, username)
       |> Client.get_light(pin)
       |> Map.fetch!(:state)
 
@@ -78,7 +78,7 @@ defmodule Hue.Driver do
         client
       ) do
     state =
-      Client.login(host, username)
+      login(host, username)
       |> Client.get_light(pin)
       |> Map.fetch!(:state)
 
@@ -99,7 +99,7 @@ defmodule Hue.Driver do
         client
       ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
-      Client.login(host, username)
+      login(host, username)
       |> Client.update_light(pin, atomize_keys(parameters))
 
     {:reply, {:ok, result}, client}
@@ -109,5 +109,9 @@ defmodule Hue.Driver do
     map
     |> Enum.map(fn {key, value} -> {String.to_existing_atom("#{key}"), value} end)
     |> Map.new()
+  end
+
+  defp login(host, username) do
+    Client.login(host, EEx.eval_string(username))
   end
 end

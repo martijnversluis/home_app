@@ -73,7 +73,7 @@ interfaces:
     host: 192.168.1.53
     polling_interval: 1000
     config:
-      username: JkqLg4Gx5CpGBFegff4KJl23M8O6KyjGWHziEIhW
+      username: <%= System.get_env("HUE_USERNAME") %>
 
 device_types:
   - id: eth_temperature
