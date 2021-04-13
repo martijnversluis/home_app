@@ -8,7 +8,7 @@ defmodule HomeApp.Action do
 
   def trigger(
         %{action: action, target: device_id} = _automation,
-        %HomeApp.Event{} = event
+        %HomeApp.Event{} = _event
       )  when action in ["activate", "deactivate"] do
     HomeApp.ConfigurationAgent.get_configuration()
     |> HomeApp.Configuration.get_device_info(device_id)

@@ -26,7 +26,7 @@ defmodule HomeApp.DeviceMonitor do
     GenServer.call(pid, :update)
   end
 
-  def handle_info(:update, {driver, interface, devices} = state) do
+  def handle_info(:update, {driver, _interface, devices} = state) do
     for device <- devices, do: update_device(driver, device)
     {:noreply, state}
   end

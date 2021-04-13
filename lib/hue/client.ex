@@ -10,6 +10,10 @@ defmodule Hue.Client do
     Connection.start_link(__MODULE__, {host, port})
   end
 
+  def init({host, port}) do
+    {:ok, {host, port}}
+  end
+
   def login(%Session{} = session, device_type) do
     case post(session, "", %{device_type: device_type}) do
       {:ok, %{"username" => username}} ->
@@ -100,9 +104,9 @@ defmodule Hue.Client do
 
   defp perform_request(%HTTPoison.Request{} = request) do
     request
-    |> IO.inspect(label: "Hue request")
+#    |> IO.inspect(label: "Hue request")
     |> HTTPoison.request()
-    |> IO.inspect(label: "Hue response")
+#    |> IO.inspect(label: "Hue response")
     |> process_response()
   end
 

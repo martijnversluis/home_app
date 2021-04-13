@@ -1,5 +1,11 @@
 defmodule HomeApp.DeviceDriver do
-  def dispatch(%{interface_type: interface_type} = device, action, parameters \\ %{}) do
+  def dispatch(devices, action, parameters \\ %{}) when is_list(devices) do
+    Enum.each(devices, fn device ->
+      dispatch(device, action, parameters)
+    end)
+  end
+
+  def dispatch(%{interface_type: interface_type} = device, action, parameters) do
     driver = get_driver!(interface_type)
 
     case action do
@@ -13,11 +19,11 @@ defmodule HomeApp.DeviceDriver do
     get_value(get_driver!(interface_type), device)
   end
 
-  def get_value(driver, %{interface_type: interface_type} = device) do
+  def get_value(driver, device) do
     try do
       driver.get_value(device)
     catch
-      :exit, value -> {:error, :no_connection}
+      :exit, _value -> {:error, :no_connection}
     end
   end
 
