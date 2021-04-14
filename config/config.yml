@@ -89,7 +89,7 @@ device_types:
     icon: "temperature-half"
   - id: eth_light
     connection: devantech_eth_relay
-    characteristics: [on, brightness]
+    characteristics: [on]
     icon: "lightbulb"
   - id: eth_outlet
     connection: devantech_eth_relay
