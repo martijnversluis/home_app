@@ -86,8 +86,8 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp group_info(
-         %{devices: group_device_ids, icon: icon} = group,
-         %{devices: configured_devices} = configuration, values
+         %{devices: group_device_ids} = group,
+         %{} = configuration, values
        ) do
     group_devices = Configuration.get_device_info(configuration, group_device_ids)
 

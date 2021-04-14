@@ -134,6 +134,10 @@ device_types:
     connection: hue_outlet
     characteristics: [on]
     icon: "plug"
+  - id: hue_daylight_sensor
+    connection: hue_daylight_sensor
+    characteristics: [binary_input]
+    icon: "sun"
 
 devices:
   - id: meter_cabinet_temperature
@@ -241,6 +245,11 @@ devices:
     room: kitchen
     interface: hue_bridge
     pin: 18
+  - id: daylight
+    type: hue_daylight_sensor
+    room: none
+    interface: hue_bridge
+    pin: 1
 
 groups:
   - id: kitchen_table_lights

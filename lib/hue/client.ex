@@ -1,6 +1,6 @@
 defmodule Hue.Client do
   use GenServer
-  alias Hue.{Light, Session}
+  alias Hue.{Device, Light, Sensor, Session}
 
   defstruct host: nil, device_type: nil, username: nil
 
@@ -30,7 +30,7 @@ defmodule Hue.Client do
   def get_lights(%Session{username: username} = session) do
     session
     |> get("/#{username}/lights")
-    |> Enum.map(fn {id, light} -> {id, Light.parse(light, id)} end)
+    |> Enum.map(fn {id, light} -> {id, Device.parse(light, id, Light.State)} end)
     |> Enum.into(%{})
   end
 
@@ -42,10 +42,10 @@ defmodule Hue.Client do
   def get_light(%Session{username: username} = session, id) do
     session
     |> get("/#{username}/lights/#{id}")
-    |> Light.parse(id)
+    |> Device.parse(id, Light.State)
   end
 
-  def update_light(%Session{} = session, %Light{id: id}, %Light.StateChange{} = state_change) do
+  def update_light(%Session{} = session, %{id: id}, %Light.StateChange{} = state_change) do
     session
     |> update_light(id, state_change)
   end
@@ -63,6 +63,12 @@ defmodule Hue.Client do
   def update_light(%Session{} = session, light_or_id, %{} = state_change) do
     session
     |> update_light(light_or_id, %Light.StateChange{} |> Map.merge(state_change))
+  end
+
+  def get_sensor(%Session{username: username} = session, id) do
+    session
+    |> get("/#{username}/sensors/#{id}")
+    |> Device.parse(id, Sensor.Daylight.State)
   end
 
   defp get(%Session{} = session, path) when is_binary(path) do
