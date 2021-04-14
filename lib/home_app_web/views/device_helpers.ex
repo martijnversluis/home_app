@@ -170,8 +170,8 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp label(%{name: device_name} = _device, %{type: "binary"} = _characteristic, _value), do: device_name
-
   defp label(%{} = _device, %{type: "numeric"} = _characteristic, nil = _value), do: "-"
+  defp label(%{} = _device, %{type: "string"} = _characteristic, value), do: value
 
   defp label(%{} = _device, %{type: "numeric", unit: unit, decimals: decimals} = _characteristic, value) do
     "#{round_numeric_value(value, decimals)} #{unit}"

@@ -30,7 +30,7 @@ defmodule Hue.Client do
   def get_lights(%Session{username: username} = session) do
     session
     |> get("/#{username}/lights")
-    |> Enum.map(fn {id, light} -> {id, Device.parse(light, id, Light.State)} end)
+    |> Enum.map(fn {id, light} -> {id, Device.parse(light, id)} end)
     |> Enum.into(%{})
   end
 
@@ -42,7 +42,7 @@ defmodule Hue.Client do
   def get_light(%Session{username: username} = session, id) do
     session
     |> get("/#{username}/lights/#{id}")
-    |> Device.parse(id, Light.State)
+    |> Device.parse(id)
   end
 
   def update_light(%Session{} = session, %{id: id}, %Light.StateChange{} = state_change) do
@@ -68,7 +68,7 @@ defmodule Hue.Client do
   def get_sensor(%Session{username: username} = session, id) do
     session
     |> get("/#{username}/sensors/#{id}")
-    |> Device.parse(id, Sensor.Daylight.State)
+    |> Device.parse(id)
   end
 
   defp get(%Session{} = session, path) when is_binary(path) do

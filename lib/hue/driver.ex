@@ -57,14 +57,13 @@ defmodule Hue.Driver do
         _,
         client
       ) when connection in ["hue_dimmable_light", "hue_go"] do
-    state =
+    %{state: %{"on" => on, "bri" => brightness}} =
       login(host, username)
       |> Client.get_light(pin)
-      |> Map.fetch!(:state)
 
     {
       :reply,
-      {:ok, %{"on" => state.on, "brightness" => state.brightness}},
+      {:ok, %{"on" => on, "brightness" => brightness}},
       client
     }
   end
@@ -77,11 +76,15 @@ defmodule Hue.Driver do
         _,
         client
       ) do
-    %{state: %{on: on}} =
+    %{state: %{"on" => on}} =
       login(host, username)
       |> Client.get_light(pin)
 
-    {:reply, {:ok, %{"on" => on}}, client}
+    {
+      :reply,
+      {:ok, %{"on" => on}},
+      client
+    }
   end
 
   def handle_call(
@@ -92,11 +95,42 @@ defmodule Hue.Driver do
         _,
         client
       ) do
-    %{state: %{daylight: daylight}} =
+    %{state: %{"daylight" => daylight}} =
       login(host, username)
       |> Client.get_sensor(pin)
 
-    {:reply, {:ok, %{"on" => daylight}}, client}
+    {
+      :reply,
+      {:ok, %{"on" => daylight}},
+      client
+    }
+  end
+
+  def handle_call(
+        {
+          :get_value,
+          %{host: host, pin: pin, config: %{username: username}, connection: "hue_dimmer_switch"} = _device
+        },
+        _,
+        client
+      ) do
+    %{
+      state: %{"buttonevent" => button_event},
+      config: %{"battery" => battery_level},
+      capabilities: %{"inputs" => inputs}
+    } =
+      login(host, username)
+      |> Client.get_sensor(pin)
+
+    {
+      :reply,
+      {
+        :ok,
+        %{"button_event" => button_event, "battery_level" => battery_level}
+        |> Map.merge(get_button_event_info(button_event, inputs))
+      },
+      client
+    }
   end
 
   def handle_call(
@@ -123,5 +157,24 @@ defmodule Hue.Driver do
 
   defp login(host, username) do
     Client.login(host, EEx.eval_string(username))
+  end
+
+  defp get_button_event_info(button_event, inputs) do
+    inputs
+    |> Stream.with_index(1)
+    |> Enum.reduce(%{}, fn {%{"events" => events}, button_index}, acc ->
+      Enum.reduce(events, acc, fn event, acc2 ->
+        Map.put(
+          acc2,
+          event["buttonevent"],
+          %{
+            "button" => button_index,
+            "event_type" => event["eventtype"],
+            "description" => "Button #{button_index} #{event["eventtype"] |> String.replace("_", " ")}"
+          }
+        )
+      end)
+    end)
+    |> Map.fetch!(button_event)
   end
 end

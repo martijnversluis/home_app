@@ -61,6 +61,22 @@ characteristics:
       max: 254
     unit: "%"
     writable: true
+  - id: hue_sensor_battery_level
+    source: battery_level
+    type: numeric
+    range:
+      min: 0
+      max: 100
+    unit: "%"
+    writable: false
+  - id: hue_dimmer_button_event
+    source: button_event
+    type: string
+    writable: false
+  - id: hue_dimmer_button_event_description
+    source: description
+    type: string
+    writable: false
 
 interfaces:
   - id: meter_cabinet_eth
@@ -138,6 +154,10 @@ device_types:
     connection: hue_daylight_sensor
     characteristics: [binary_input]
     icon: "sun"
+  - id: hue_dimmer_switch
+    connection: hue_dimmer_switch
+    characteristics: [hue_dimmer_button_event_description, hue_dimmer_button_event, hue_sensor_battery_level]
+    icon: "sliders-v-alt"
 
 devices:
   - id: meter_cabinet_temperature
@@ -250,6 +270,11 @@ devices:
     room: none
     interface: hue_bridge
     pin: 1
+  - id: hue_dimmer_switch
+    type: hue_dimmer_switch
+    room: none
+    interface: hue_bridge
+    pin: 2
 
 groups:
   - id: kitchen_table_lights
