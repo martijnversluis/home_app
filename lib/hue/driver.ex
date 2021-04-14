@@ -77,16 +77,26 @@ defmodule Hue.Driver do
         _,
         client
       ) do
-    state =
+    %{state: %{on: on}} =
       login(host, username)
       |> Client.get_light(pin)
-      |> Map.fetch!(:state)
 
-    {
-      :reply,
-      {:ok, %{"on" => state.on}},
-      client
-    }
+    {:reply, {:ok, %{"on" => on}}, client}
+  end
+
+  def handle_call(
+        {
+          :get_value,
+          %{host: host, pin: pin, config: %{username: username}, connection: "hue_daylight_sensor"} = _device
+        },
+        _,
+        client
+      ) do
+    %{state: %{daylight: daylight}} =
+      login(host, username)
+      |> Client.get_sensor(pin)
+
+    {:reply, {:ok, %{"on" => daylight}}, client}
   end
 
   def handle_call(

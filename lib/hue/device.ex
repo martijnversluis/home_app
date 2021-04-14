@@ -1,4 +1,4 @@
-defmodule Hue.Light do
+defmodule Hue.Device do
   defstruct id: nil,
             state: %{},
             software_update: nil,
@@ -17,31 +17,28 @@ defmodule Hue.Light do
   def parse(
     %{
       "state" => %{} = state,
-      "swupdate" => software_update,
       "type" => type,
       "name" => name,
       "modelid" => model_id,
       "manufacturername" => manufacturer_name,
-      "productname" => product_name,
-      "capabilities" => capabilities,
       "config" => config,
-      "uniqueid" => unique_id,
       "swversion" => software_version
     } = data,
-    id
+    id,
+    state_struct
       ) do
     %__MODULE__{
       id: id,
-      state: Hue.Light.State.parse(state),
-      software_update: Hue.SoftwareUpdateState.parse(software_update),
+      state: state_struct.parse(state),
+      software_update: Hue.SoftwareUpdateState.parse(data["swupdate"]),
       type: type,
       name: name,
       model_id: model_id,
       manufacturer_name: manufacturer_name,
-      product_name: product_name,
-      capabilities: capabilities,
+      product_name: data["productname"],
+      capabilities: data["capabilities"],
       config: config,
-      unique_id: unique_id,
+      unique_id: data["uniqueid"],
       software_version: software_version,
       software_config_id: data["swconfigid"],
       product_id: data["productid"]
