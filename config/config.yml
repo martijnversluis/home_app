@@ -61,6 +61,22 @@ characteristics:
       max: 254
     unit: "%"
     writable: true
+  - id: hue_sensor_battery_level
+    source: battery_level
+    type: numeric
+    range:
+      min: 0
+      max: 100
+    unit: "%"
+    writable: false
+  - id: hue_dimmer_button_event
+    source: button_event
+    type: string
+    writable: false
+  - id: hue_dimmer_button_event_description
+    source: description
+    type: string
+    writable: false
 
 interfaces:
   - id: meter_cabinet_eth
@@ -89,7 +105,7 @@ device_types:
     icon: "temperature-half"
   - id: eth_light
     connection: devantech_eth_relay
-    characteristics: [on, brightness]
+    characteristics: [on]
     icon: "lightbulb"
   - id: eth_outlet
     connection: devantech_eth_relay
@@ -138,13 +154,17 @@ device_types:
     connection: hue_daylight_sensor
     characteristics: [binary_input]
     icon: "sun"
+  - id: hue_dimmer_switch
+    connection: hue_dimmer_switch
+    characteristics: [hue_dimmer_button_event_description, hue_dimmer_button_event, hue_sensor_battery_level]
+    icon: "sliders-v-alt"
 
 devices:
   - id: meter_cabinet_temperature
     type: eth_temperature
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 2
+    pin: 1
   - id: meter_cabinet_relay_1
     type: eth_outlet
     room: meter_cabinet
@@ -154,7 +174,7 @@ devices:
     type: eth_motion_sensor
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 1
+    pin: 2
   - id: meter_cabinet_input_1
     type: eth_digital_input
     room: meter_cabinet
@@ -250,6 +270,11 @@ devices:
     room: none
     interface: hue_bridge
     pin: 1
+  - id: hue_dimmer_switch
+    type: hue_dimmer_switch
+    room: none
+    interface: hue_bridge
+    pin: 2
 
 groups:
   - id: kitchen_table_lights

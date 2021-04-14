@@ -23,7 +23,7 @@ defmodule HomeApp.Configuration.Characteristic do
     |> cast_embed(:states)
     |> validate_required([:id])
     |> HomeApp.Configuration.ensure_name()
-    |> validate_inclusion(:type, ["binary", "numeric", "timestamp"])
+    |> validate_inclusion(:type, ["binary", "numeric", "timestamp", "string"])
     |> validate_on(:type, "numeric", fn changeset ->
       validate_required(changeset, :range)
     end)

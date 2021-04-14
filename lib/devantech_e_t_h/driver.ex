@@ -58,7 +58,7 @@ defmodule DevantechETH.Driver do
   def handle_call({:get_value, %{pin: pin, connection: "devantech_eth_relay"} = _device}, _, client) do
     case Client.get_relay(client, pin) do
       {:ok, state} ->
-        {:reply, {:ok, %{"on" => state, "brightness" => 33}}, client}
+        {:reply, {:ok, %{"on" => state}}, client}
       {:error, error} ->
         {:reply, {:error, error}, client}
     end

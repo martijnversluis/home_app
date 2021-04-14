@@ -24,12 +24,11 @@ defmodule Hue.Device do
       "config" => config,
       "swversion" => software_version
     } = data,
-    id,
-    state_struct
+    id
       ) do
     %__MODULE__{
       id: id,
-      state: state_struct.parse(state),
+      state: state,
       software_update: Hue.SoftwareUpdateState.parse(data["swupdate"]),
       type: type,
       name: name,
