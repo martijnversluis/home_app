@@ -144,7 +144,7 @@ devices:
     type: eth_temperature
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 2
+    pin: 1
   - id: meter_cabinet_relay_1
     type: eth_outlet
     room: meter_cabinet
@@ -154,7 +154,7 @@ devices:
     type: eth_motion_sensor
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 1
+    pin: 2
   - id: meter_cabinet_input_1
     type: eth_digital_input
     room: meter_cabinet
