@@ -9,9 +9,9 @@ defmodule HTTPNotifier do
   def notify(
         %{} = notifier_config,
         %{} = action_config,
-        %HomeApp.Event{subject: device_info, data: event_data}
+        %HomeApp.Event{subject: subject, data: event_data}
       ) do
-    eex_bindings = bindings(device_info, action_config, event_data)
+    eex_bindings = bindings(subject, action_config, event_data)
 
     %HTTPoison.Request{
       method: Map.get(notifier_config, :method, "get"),
@@ -24,8 +24,8 @@ defmodule HTTPNotifier do
     |> IO.inspect(label: "HTTP response")
   end
 
-  defp bindings(device_info, action_config, event_data) do
-    device_info
+  defp bindings(subject, action_config, event_data) do
+    (subject || %{})
     |> Map.merge(action_config)
     |> Map.merge(event_data)
     |> Map.to_list()
