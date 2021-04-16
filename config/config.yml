@@ -318,3 +318,13 @@ automations:
     characteristic: on
     action: activate
     target: hallway_light
+  - id: evening_turn_off_doorbell
+    event: time
+    time: 19:00
+    action: deactivate
+    target: doorbell_switch
+  - id: morning_turn_on_doorbell
+    event: time
+    time: 7:00
+    action: activate
+    target: doorbell_switch

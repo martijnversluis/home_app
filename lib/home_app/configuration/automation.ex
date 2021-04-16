@@ -4,6 +4,7 @@ defmodule HomeApp.Configuration.Automation do
   schema "" do
     field(:id, :string)
     field(:event, :string)
+    field(:time, :string)
     field(:subject, :string)
     field(:characteristic, :string)
     field(:action, :string)
@@ -13,7 +14,7 @@ defmodule HomeApp.Configuration.Automation do
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :event, :subject, :characteristic, :action, :target, :config])
-    |> validate_required([:id, :event, :subject, :characteristic, :action, :target])
+    |> cast(attributes, [:id, :event, :time, :subject, :characteristic, :action, :target, :config])
+    |> validate_required([:id, :event, :action, :target])
   end
 end

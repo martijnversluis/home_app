@@ -7,13 +7,22 @@ defmodule HomeApp.EventMonitor do
   end
 
   def init(_) do
-    {:ok, {Phoenix.PubSub.subscribe(HomeApp.PubSub, "device:state_changed")}}
+    Phoenix.PubSub.subscribe(HomeApp.PubSub, "device:state_changed")
+    Phoenix.PubSub.subscribe(HomeApp.PubSub, "clock:tick")
+    {:ok, {}}
   end
 
   def handle_info({"device:state_changed", device_id, {previous_state, new_state}}, socket) do
     HomeApp.ConfigurationAgent.get_configuration()
     |> HomeApp.Configuration.get_device_info(device_id)
     |> Event.device_state_changed(%{previous_state: previous_state, new_state: new_state})
+    |> HomeApp.EventHandler.handle_event()
+
+    {:noreply, socket}
+  end
+
+  def handle_info({"clock:tick", time}, socket) do
+    Event.clock_tick(%{time: time})
     |> HomeApp.EventHandler.handle_event()
 
     {:noreply, socket}

@@ -1,6 +1,6 @@
 defmodule Hue.Client do
   use GenServer
-  alias Hue.{Device, Light, Sensor, Session}
+  alias Hue.{Device, Light, Session}
 
   defstruct host: nil, device_type: nil, username: nil
 

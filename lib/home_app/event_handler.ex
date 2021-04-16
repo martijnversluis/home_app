@@ -12,6 +12,29 @@ defmodule HomeApp.EventHandler do
   end
 
   defp should_trigger_automation?(
+         %{
+           event: "time",
+           time: automation_time
+         } = _automation,
+         %{
+           type: "clock:tick",
+           data: %{time: event_time}
+         } = _event
+       ) do
+    [automation_hours, automation_minutes] =
+      automation_time
+      |> String.split(":")
+      |> Enum.map(fn part ->
+        {num, rest} = Integer.parse(part)
+        num
+      end)
+
+    IO.inspect({[automation_hours, automation_minutes], event_time}, label: "Compare times")
+
+    automation_hours == event_time.hour && automation_minutes == event_time.minute
+  end
+
+  defp should_trigger_automation?(
          %{} = _automation,
          %{
            type: "device:state_changed",
