@@ -312,3 +312,9 @@ automations:
     target: slack
     config:
       message: "🔔🔔 @here Someone's at the door 🔔🔔"
+  - id: doorbell_turn_on_hallway_light
+    event: activated
+    subject: doorbell
+    characteristic: on
+    action: activate
+    target: hallway_light
