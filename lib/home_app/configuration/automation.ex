@@ -7,14 +7,27 @@ defmodule HomeApp.Configuration.Automation do
     field(:time, :string)
     field(:subject, :string)
     field(:characteristic, :string)
-    field(:action, :string)
-    field(:target, :string)
-    field(:config, HomeApp.Configuration.Config, default: %{})
+    embeds_many(:actions, HomeApp.Configuration.Action)
+  end
+
+  def changeset(struct, %{"action" => action, "target" => target} = attributes) do
+    changeset(
+      struct,
+      attributes
+      |> Map.drop(["action", "target", "config"])
+      |> Map.put(
+        "actions",
+        [
+          %{"action" => action, "target" => target, "config" => attributes["config"]}
+        ]
+      )
+    )
   end
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :event, :time, :subject, :characteristic, :action, :target, :config])
-    |> validate_required([:id, :event, :action, :target])
+    |> cast(attributes, [:id, :event, :time, :subject, :characteristic])
+    |> cast_embed(:actions)
+    |> validate_required([:id, :event])
   end
 end
