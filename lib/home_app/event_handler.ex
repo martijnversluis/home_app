@@ -25,7 +25,7 @@ defmodule HomeApp.EventHandler do
       automation_time
       |> String.split(":")
       |> Enum.map(fn part ->
-        {num, rest} = Integer.parse(part)
+        {num, _rest} = Integer.parse(part)
         num
       end)
 

@@ -16,6 +16,7 @@ defmodule Hue.Driver do
 
   def activate(device_info), do: GenServer.call(name(device_info), {:activate, device_info})
   def deactivate(device_info), do: GenServer.call(name(device_info), {:deactivate, device_info})
+  def blink(device_info), do: GenServer.call(name(device_info), {:blink, device_info})
   def get_value(device_info), do: GenServer.call(name(device_info), {:get_value, device_info})
   def change(device_info, %{} = parameters), do: GenServer.call(name(device_info), {:change, device_info, parameters})
 
@@ -45,6 +46,21 @@ defmodule Hue.Driver do
     result =
       login(host, username)
       |> Client.update_light(pin, %{on: true})
+
+    {:reply, {:ok, result}, client}
+  end
+
+  def handle_call(
+        {
+          :blink,
+          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device
+        },
+        _,
+        client
+      ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+    result =
+      login(host, username)
+      |> Client.update_light(pin, %{alert: "lselect"})
 
     {:reply, {:ok, result}, client}
   end

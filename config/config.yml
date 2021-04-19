@@ -308,10 +308,15 @@ automations:
     event: activated
     subject: doorbell
     characteristic: on
-    action: notify
-    target: slack
-    config:
-      message: "🔔🔔 @here Someone's at the door 🔔🔔"
+    actions:
+    - action: notify
+      target: slack
+      config:
+        message: "🔔🔔 @here Someone's at the door 🔔🔔"
+    - action: blink
+      target: living_room_light
+    - action: blink
+      target: study_hue_go
   - id: doorbell_turn_on_hallway_light
     event: activated
     subject: doorbell

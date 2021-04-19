@@ -1,5 +1,7 @@
 defmodule HomeApp.DeviceDriver do
-  def dispatch(devices, action, parameters \\ %{}) when is_list(devices) do
+  def dispatch(devices, action, parameters \\ %{})
+
+  def dispatch(devices, action, parameters) when is_list(devices) do
     Enum.each(devices, fn device ->
       dispatch(device, action, parameters)
     end)
@@ -11,6 +13,7 @@ defmodule HomeApp.DeviceDriver do
     case action do
       "activate" -> driver.activate(device)
       "deactivate" -> driver.deactivate(device)
+      "blink" -> driver.blink(device)
       "change" -> driver.change(device, parameters)
     end
   end
