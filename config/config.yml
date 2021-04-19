@@ -287,6 +287,12 @@ groups:
     - kitchen_table_light_4
     - kitchen_table_light_5
     - kitchen_table_light_6
+  - id: upstairs_lights
+    room: none
+    icon: "lightbulb"
+    devices:
+    - corridor_light
+    - bathroom_light
   - id: study_lights
     room: study
     icon: "lightbulb"
@@ -333,3 +339,29 @@ automations:
     time: 7:00
     action: activate
     target: doorbell_switch
+  - id: sunrise_turn_off_lights
+    event: activated
+    subject: daylight
+    characteristic: on
+    actions:
+    - action: deactivate
+      target: kitchen_table_lights
+    - action: deactivate
+      target: kitchen_counter_lights
+    - action: deactivate
+      target: living_room_light
+    - action: deactivate
+      target: hallway_light
+    - action: deactivate
+      target: upstairs_lights
+  - id: sunset_turn_on_lights
+    event: deactivated
+    subject: daylight
+    characteristic: on
+    actions:
+    - action: activate
+      target: kitchen_table_lights
+    - action: activate
+      target: kitchen_counter_lights
+    - action: activate
+      target: living_room_light
