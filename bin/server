@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-$(cat /home_app/.env | tr '\n' ' ') PORT=4000 MIX_ENV=prod mix phx.server
+source /home_app/.env
+SECRET_KEY_BASE="${SECRET_KEY_BASE}" PORT=4000 MIX_ENV=prod mix phx.server

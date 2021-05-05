@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker tag home_app:latest ghcr.io/martijnversluis/home_app:latest
+docker push ghcr.io/martijnversluis/home_app:latest

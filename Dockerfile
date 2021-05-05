@@ -52,4 +52,8 @@ RUN npm install --prefix ./assets
 RUN npm run deploy --prefix ./assets
 RUN mix phx.digest
 
+RUN asdf uninstall nodejs $NODEJS_VERSION
+
 EXPOSE 4000
+
+CMD ["/home_app/bin/server"]

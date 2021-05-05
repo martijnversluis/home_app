@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
 
-docker run -it ghcr.io/martijnversluis/home_app:latest -p 4000:4000 -v $(pwd)/.env:/home_app/.env /home_app/bin/server
+docker pull ghcr.io/martijnversluis/home_app:latest
+
+docker run \
+       -p "4000:4000" \
+       -v "$(pwd)/.env:/home_app/.env" \
+       -it \
+       "ghcr.io/martijnversluis/home_app:latest" \
+       "/home_app/bin/server"
+
+docker run -p "4000:4000" -v "$(pwd)/.env:/home_app/.env" -it "ghcr.io/martijnversluis/home_app:latest"
