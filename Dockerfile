@@ -1,4 +1,4 @@
-FROM debian:jessie-slim
+FROM resin/rpi-raspbian
 
 ARG SECRET_KEY_BASE
 
@@ -13,6 +13,7 @@ ENV HOME /root
 ENV PATH ${HOME}/.asdf/bin:${HOME}/.asdf/shims:${PATH}
 
 RUN apt update
+RUN apt upgrade
 RUN apt install -y automake \
                    autoconf \
                    ca-certificates \
