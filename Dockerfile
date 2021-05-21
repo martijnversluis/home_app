@@ -18,6 +18,7 @@ RUN apt install -y automake \
                    autoconf \
                    ca-certificates \
                    curl \
+                   gcc \
                    git \
                    libncurses5-dev \
                    libssl-dev \
