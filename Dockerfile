@@ -12,6 +12,8 @@ ENV MIX_ENV prod
 ENV HOME /root
 ENV PATH ${HOME}/.asdf/bin:${HOME}/.asdf/shims:${PATH}
 
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+
 RUN apt update
 RUN apt upgrade
 RUN apt install -y automake \
@@ -40,9 +42,9 @@ RUN asdf global erlang $ERLANG_VERSION
 RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 RUN asdf install elixir $ELIXIR_VERSION
 RUN asdf global elixir $ELIXIR_VERSION
-RUN asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-RUN asdf install nodejs $NODEJS_VERSION
-RUN asdf global nodejs $NODEJS_VERSION
+#RUN asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+#RUN asdf install nodejs $NODEJS_VERSION
+#RUN asdf global nodejs $NODEJS_VERSION
 RUN yes | mix local.hex --force
 RUN yes | mix local.rebar --force
 
