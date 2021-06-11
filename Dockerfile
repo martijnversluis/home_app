@@ -36,15 +36,19 @@ WORKDIR /home_app
 
 RUN echo 'PATH=$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH' >> /root/.profile
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch $ASDF_VERSION
+
 RUN asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
 RUN asdf install erlang $ERLANG_VERSION
 RUN asdf global erlang $ERLANG_VERSION
+
 RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 RUN asdf install elixir $ELIXIR_VERSION
 RUN asdf global elixir $ELIXIR_VERSION
-RUN wget "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-armv7l.tar.xz"
-RUN sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODEJS_VERSION}-linux-armv7l.tar.xz"
-RUN node --version
+
+RUN curl -o "node-v${NODEJS_VERSION}-linux-armv7l.tar.gz" \
+         "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-armv7l.tar.gz"
+RUN sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODEJS_VERSION}-linux-armv7l.tar.gz"
+
 RUN yes | mix local.hex --force
 RUN yes | mix local.rebar --force
 
