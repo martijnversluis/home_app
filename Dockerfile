@@ -42,9 +42,9 @@ RUN asdf global erlang $ERLANG_VERSION
 RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
 RUN asdf install elixir $ELIXIR_VERSION
 RUN asdf global elixir $ELIXIR_VERSION
-RUN asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-RUN asdf install nodejs $NODEJS_VERSION
-RUN asdf global nodejs $NODEJS_VERSION
+RUN wget "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-armv7l.tar.xz"
+RUN sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODEJS_VERSION}-linux-armv7l.tar.xz"
+RUN node --version
 RUN yes | mix local.hex --force
 RUN yes | mix local.rebar --force
 
