@@ -1,53 +1,21 @@
-FROM resin/rpi-raspbian
-
 ARG SECRET_KEY_BASE
+ARG ERLANG_VERSION="23.2.7"
 
-ENV ASDF_VERSION "v0.8.0"
-ENV ERLANG_VERSION "23.3.1"
-ENV ELIXIR_VERSION "1.11.4"
-ENV NODEJS_VERSION "14.15.0"
+FROM bitwalker/alpine-elixir:1.10.4
 
+ENV ELIXIR_VERSION 1.10
 ENV SECRET_KEY_BASE $SECRET_KEY_BASE
 ENV MIX_ENV prod
 ENV HOME /root
-ENV PATH ${HOME}/.asdf/bin:${HOME}/.asdf/shims:${PATH}
 
-RUN echo "Architecture: $(uname -m)"
+RUN apk update
+RUN apk upgrade
+RUN apk add nodejs nodejs-npm
 
-RUN apt update
-RUN apt upgrade
-RUN apt install -y automake \
-                   autoconf \
-                   ca-certificates \
-                   curl \
-                   gcc \
-                   git \
-                   libncurses5-dev \
-                   libssl-dev \
-                   make \
-                   nodejs \
-                   openssl \
-                   perl \
-                   unixodbc \
-                   unixodbc-dev \
-                   unzip
+RUN elixir -v
+RUN node -v
 
 WORKDIR /home_app
-
-RUN echo 'PATH=$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH' >> /root/.profile
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch $ASDF_VERSION
-
-RUN asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-RUN asdf install erlang $ERLANG_VERSION
-RUN asdf global erlang $ERLANG_VERSION
-
-RUN asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-RUN asdf install elixir $ELIXIR_VERSION
-RUN asdf global elixir $ELIXIR_VERSION
-
-RUN curl -o "node-v${NODEJS_VERSION}-linux-armv7l.tar.gz" \
-         "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-armv7l.tar.gz"
-RUN sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODEJS_VERSION}-linux-armv7l.tar.gz"
 
 RUN yes | mix local.hex --force
 RUN yes | mix local.rebar --force
@@ -60,7 +28,8 @@ RUN npm install --prefix ./assets
 RUN npm run deploy --prefix ./assets
 RUN mix phx.digest
 
-RUN asdf uninstall nodejs $NODEJS_VERSION
+RUN apk del nodejs nodejs-npm
+RUN rm -rf /var/cache/apk/*
 
 EXPOSE 4000
 
