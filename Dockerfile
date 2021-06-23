@@ -33,4 +33,4 @@ RUN rm -rf /var/cache/apk/*
 
 EXPOSE 4000
 
-CMD ["/home_app/bin/server"]
+#CMD ["/home_app/bin/server"]
