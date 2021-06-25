@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-source /home_app/.env
+source .env
 SECRET_KEY_BASE="${SECRET_KEY_BASE}" PORT=4000 MIX_ENV=prod mix phx.server
