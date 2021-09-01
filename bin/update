@@ -1,0 +1,14 @@
+#!/bin/bash
+
+base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && pwd )"
+. "$ASDF_DIR/asdf.sh"
+cd $base_dir
+source .env
+git pull
+yes | mix local.hex --force
+yes | mix local.rebar --force
+yes | mix local.rebar --force
+mix compile
+npm install --prefix ./assets
+npm run deploy --prefix ./assets
+mix phx.digest
