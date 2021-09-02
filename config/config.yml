@@ -224,32 +224,32 @@ devices:
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 10
+    pin: 19
   - id: kitchen_table_light_2
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 11
+    pin: 20
   - id: kitchen_table_light_3
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 12
+    pin: 21
   - id: kitchen_table_light_4
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 13
+    pin: 22
   - id: kitchen_table_light_5
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 14
+    pin: 23
   - id: kitchen_table_light_6
     type: hue_dimmable_light
     room: kitchen
     interface: hue_bridge
-    pin: 15
+    pin: 24
   - id: hallway_light
     type: hue_dimmable_light
     room: hallway
