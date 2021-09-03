@@ -18,6 +18,7 @@ defmodule Hue.Client do
     case post(session, "", %{device_type: device_type}) do
       {:ok, %{"username" => username}} ->
         {:ok, session |> Map.merge(%{device_type: device_type, username: username})}
+
       {:error, %{"description" => description}} ->
         {:error, description}
     end
@@ -50,7 +51,11 @@ defmodule Hue.Client do
     |> update_light(id, state_change)
   end
 
-  def update_light(%Session{username: username} = session, id, %Light.StateChange{} = state_change) do
+  def update_light(
+        %Session{username: username} = session,
+        id,
+        %Light.StateChange{} = state_change
+      ) do
     session
     |> put(
       "/#{username}/lights/#{id}/state",
@@ -92,7 +97,8 @@ defmodule Hue.Client do
     |> Map.new()
   end
 
-  defp request(%Session{host: host} = _session, method, path, %{} = parameters \\ %{}) when is_binary(path) do
+  defp request(%Session{host: host} = _session, method, path, %{} = parameters \\ %{})
+       when is_binary(path) do
     %HTTPoison.Request{
       method: method,
       url: "http://" <> host <> @api_root <> path,

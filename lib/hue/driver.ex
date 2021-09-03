@@ -11,14 +11,18 @@ defmodule Hue.Driver do
     {:ok, client}
   end
 
-  defp name(%{interface: id, interface_type: type} = _device_info), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+  defp name(%{interface: id, interface_type: type} = _device_info),
+    do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+
   defp name(%{id: id, type: type} = _interface), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 
   def activate(device_info), do: GenServer.call(name(device_info), {:activate, device_info})
   def deactivate(device_info), do: GenServer.call(name(device_info), {:deactivate, device_info})
   def blink(device_info), do: GenServer.call(name(device_info), {:blink, device_info})
   def get_value(device_info), do: GenServer.call(name(device_info), {:get_value, device_info})
-  def change(device_info, %{} = parameters), do: GenServer.call(name(device_info), {:change, device_info, parameters})
+
+  def change(device_info, %{} = parameters),
+    do: GenServer.call(name(device_info), {:change, device_info, parameters})
 
   def handle_call(
         {
@@ -27,7 +31,8 @@ defmodule Hue.Driver do
         },
         _,
         client
-      ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      )
+      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{on: false})
@@ -42,7 +47,8 @@ defmodule Hue.Driver do
         },
         _,
         client
-      ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      )
+      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{on: true})
@@ -57,7 +63,8 @@ defmodule Hue.Driver do
         },
         _,
         client
-      ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      )
+      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{alert: "lselect"})
@@ -72,7 +79,8 @@ defmodule Hue.Driver do
         },
         _,
         client
-      ) when connection in ["hue_dimmable_light", "hue_go"] do
+      )
+      when connection in ["hue_dimmable_light", "hue_go"] do
     %{state: %{"on" => on, "bri" => brightness}} =
       login(host, username)
       |> Client.get_light(pin)
@@ -87,7 +95,8 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: "hue_outlet"} = _device
+          %{host: host, pin: pin, config: %{username: username}, connection: "hue_outlet"} =
+            _device
         },
         _,
         client
@@ -106,7 +115,12 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: "hue_daylight_sensor"} = _device
+          %{
+            host: host,
+            pin: pin,
+            config: %{username: username},
+            connection: "hue_daylight_sensor"
+          } = _device
         },
         _,
         client
@@ -125,7 +139,8 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: "hue_dimmer_switch"} = _device
+          %{host: host, pin: pin, config: %{username: username}, connection: "hue_dimmer_switch"} =
+            _device
         },
         _,
         client
@@ -152,12 +167,14 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :change,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device,
+          %{host: host, pin: pin, config: %{username: username}, connection: connection} =
+            _device,
           %{} = parameters
         },
         _,
         client
-      ) when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      )
+      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, atomize_keys(parameters))
@@ -186,7 +203,8 @@ defmodule Hue.Driver do
           %{
             "button" => button_index,
             "event_type" => event["eventtype"],
-            "description" => "Button #{button_index} #{event["eventtype"] |> String.replace("_", " ")}"
+            "description" =>
+              "Button #{button_index} #{event["eventtype"] |> String.replace("_", " ")}"
           }
         )
       end)

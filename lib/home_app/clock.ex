@@ -12,7 +12,7 @@ defmodule HomeApp.Clock do
 
   def schedule_next_tick() do
     Timex.now()
-    |> Timex.set([second: 0, microsecond: 0])
+    |> Timex.set(second: 0, microsecond: 0)
     |> Timex.shift(minutes: 1)
     |> Timex.diff(Timex.now(), :milliseconds)
     |> :timer.send_after(__MODULE__, :tick)
@@ -24,6 +24,7 @@ defmodule HomeApp.Clock do
       event_name,
       {event_name, current_time()}
     )
+
     {:noreply, state}
   end
 

@@ -11,18 +11,28 @@ defmodule DevantechETH.Driver do
     {:ok, client}
   end
 
-  defp name(%{interface: id, interface_type: type} = _device_info), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+  defp name(%{interface: id, interface_type: type} = _device_info),
+    do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+
   defp name(%{id: id, type: type} = _interface), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 
   def activate(device_info), do: GenServer.call(name(device_info), {:activate, device_info})
   def deactivate(device_info), do: GenServer.call(name(device_info), {:deactivate, device_info})
   def get_value(device_info), do: GenServer.call(name(device_info), {:get_value, device_info})
 
-  def handle_call({:activate, %{connection: "devantech_eth_relay", pin: pin} = _device}, _, client) do
+  def handle_call(
+        {:activate, %{connection: "devantech_eth_relay", pin: pin} = _device},
+        _,
+        client
+      ) do
     {:reply, Client.set_relay_on(client, pin), client}
   end
 
-  def handle_call({:deactivate, %{connection: "devantech_eth_relay", pin: pin} = _device}, _, client) do
+  def handle_call(
+        {:deactivate, %{connection: "devantech_eth_relay", pin: pin} = _device},
+        _,
+        client
+      ) do
     {:reply, Client.set_relay_off(client, pin), client}
   end
 
@@ -44,30 +54,42 @@ defmodule DevantechETH.Driver do
     case Client.get_analogue_input(client, pin) do
       {:ok, voltage} ->
         ratio = voltage / (max_voltage - min_voltage)
-        value = min_value + ((max_value - min_value) * ratio)
+        value = min_value + (max_value - min_value) * ratio
+
         {
           :reply,
           {:ok, %{"voltage" => value}},
           client
         }
+
       {:error, error} ->
         {:reply, {:error, error}, client}
     end
   end
 
-  def handle_call({:get_value, %{pin: pin, connection: "devantech_eth_relay"} = _device}, _, client) do
+  def handle_call(
+        {:get_value, %{pin: pin, connection: "devantech_eth_relay"} = _device},
+        _,
+        client
+      ) do
     case Client.get_relay(client, pin) do
       {:ok, state} ->
         {:reply, {:ok, %{"on" => state}}, client}
+
       {:error, error} ->
         {:reply, {:error, error}, client}
     end
   end
 
-  def handle_call({:get_value, %{pin: pin, connection: "devantech_eth_digital_input"} = _device}, _, client) do
+  def handle_call(
+        {:get_value, %{pin: pin, connection: "devantech_eth_digital_input"} = _device},
+        _,
+        client
+      ) do
     case Client.get_input(client, pin) do
       {:ok, state} ->
         {:reply, {:ok, %{"on" => state}}, client}
+
       {:error, error} ->
         {:reply, {:error, error}, client}
     end

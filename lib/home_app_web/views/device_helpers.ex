@@ -33,7 +33,7 @@ defmodule HomeAppWeb.DeviceHelpers do
         %{} = configuration,
         %{} = values
       ) do
-  (device_infos(configuration, values) ++ group_infos(configuration, values))
+    (device_infos(configuration, values) ++ group_infos(configuration, values))
     |> Enum.group_by(fn entity -> entity.room end)
     |> Enum.map(fn {room_id, entities} ->
       {
@@ -87,7 +87,8 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp group_info(
          %{devices: group_device_ids} = group,
-         %{} = configuration, values
+         %{} = configuration,
+         values
        ) do
     group_devices = Configuration.get_device_info(configuration, group_device_ids)
 
@@ -99,15 +100,19 @@ defmodule HomeAppWeb.DeviceHelpers do
     common_characteristic_ids =
       all_characteristic_ids
       |> Enum.reject(fn characteristic ->
-        Enum.any?(group_devices, fn device -> !Enum.member?(device.characteristic_ids, characteristic)  end)
+        Enum.any?(group_devices, fn device ->
+          !Enum.member?(device.characteristic_ids, characteristic)
+        end)
       end)
 
-    common_characteristics = Configuration.get_characteristics(configuration, common_characteristic_ids)
+    common_characteristics =
+      Configuration.get_characteristics(configuration, common_characteristic_ids)
+
     grouped_values = group_values(common_characteristics, values)
 
     %{
       type: "group",
-      click_action: click_action(common_characteristics,  grouped_values),
+      click_action: click_action(common_characteristics, grouped_values),
       state: state(common_characteristics, grouped_values),
       label: label(group, common_characteristics, grouped_values),
       button_icon: button_icon(common_characteristics, grouped_values),
@@ -134,6 +139,7 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp button_icon(%{} = _characteristic, _value), do: nil
 
   defp get_group_value(%{type: "binary"} = _characteristic, values), do: Enum.all?(values)
+
   defp get_group_value(%{type: "numeric"} = _characteristic, values) do
     Enum.sum(values) / Enum.count(values)
   end
@@ -169,11 +175,17 @@ defmodule HomeAppWeb.DeviceHelpers do
     label(device, characteristic, get_value(value, characteristic))
   end
 
-  defp label(%{name: device_name} = _device, %{type: "binary"} = _characteristic, _value), do: device_name
+  defp label(%{name: device_name} = _device, %{type: "binary"} = _characteristic, _value),
+    do: device_name
+
   defp label(%{} = _device, %{type: "numeric"} = _characteristic, nil = _value), do: "-"
   defp label(%{} = _device, %{type: "string"} = _characteristic, value), do: value
 
-  defp label(%{} = _device, %{type: "numeric", unit: unit, decimals: decimals} = _characteristic, value) do
+  defp label(
+         %{} = _device,
+         %{type: "numeric", unit: unit, decimals: decimals} = _characteristic,
+         value
+       ) do
     "#{round_numeric_value(value, decimals)} #{unit}"
   end
 
@@ -184,7 +196,9 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp round_numeric_value(value, nil), do: value
-  defp round_numeric_value(value, decimals) when is_integer(decimals), do: Float.ceil(value, decimals)
+
+  defp round_numeric_value(value, decimals) when is_integer(decimals),
+    do: Float.ceil(value, decimals)
 
   defp state(characteristics, value) when is_list(characteristics) do
     characteristic = List.first(characteristics)

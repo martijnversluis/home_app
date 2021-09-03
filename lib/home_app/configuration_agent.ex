@@ -2,11 +2,14 @@ defmodule HomeApp.ConfigurationAgent do
   use Agent
 
   def start_link(_) do
-    Agent.start_link(fn ->
-      Application.get_env(:home_app, :yml_config)
-      |> HomeApp.Configuration.load!()
-      |> IO.inspect(label: "loaded configuration")
-    end, name: __MODULE__)
+    Agent.start_link(
+      fn ->
+        Application.get_env(:home_app, :yml_config)
+        |> HomeApp.Configuration.load!()
+        |> IO.inspect(label: "loaded configuration")
+      end,
+      name: __MODULE__
+    )
   end
 
   def set_configuration(configuration) do
@@ -18,6 +21,6 @@ defmodule HomeApp.ConfigurationAgent do
   end
 
   def name() do
-    Agent.agent
+    Agent.agent()
   end
 end

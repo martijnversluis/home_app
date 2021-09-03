@@ -1,5 +1,14 @@
 defmodule HomeApp.Configuration do
-  alias HomeApp.Configuration.{Automation, Characteristic, Device, DeviceType, Group, Interface, Notifier, Room}
+  alias HomeApp.Configuration.{
+    Automation,
+    Characteristic,
+    Device,
+    DeviceType,
+    Group,
+    Interface,
+    Notifier,
+    Room
+  }
 
   import Ecto.Changeset
   use Ecto.Schema
@@ -41,6 +50,7 @@ defmodule HomeApp.Configuration do
         |> IO.inspect(label: "parsed yaml")
         |> parse!()
         |> strip_structs()
+
       {:error, error} ->
         {:error, "Could not read config file: #{error}"}
     end
@@ -50,6 +60,7 @@ defmodule HomeApp.Configuration do
     case struct(__MODULE__) |> changeset(attributes) do
       %{valid?: true} = changeset ->
         {:ok, apply_changes(changeset)}
+
       changeset ->
         {:error, changeset_error_to_string(changeset)}
     end
@@ -85,6 +96,7 @@ defmodule HomeApp.Configuration do
     case get_group(configuration, device_id) do
       %{devices: device_ids} ->
         get_device_info(configuration, device_ids)
+
       nil ->
         device = get_device(configuration, device_id)
         device_type = get_device_type(configuration, device.type)
@@ -112,19 +124,30 @@ defmodule HomeApp.Configuration do
     |> Enum.map(fn %{id: interface_id} = interface ->
       {
         interface,
-        Enum.filter(devices, fn %{interface: device_interface} = _device -> device_interface == interface_id end)
+        Enum.filter(devices, fn %{interface: device_interface} = _device ->
+          device_interface == interface_id
+        end)
       }
     end)
   end
 
   def get_characteristics(configuration, characteristic_ids) do
-    Enum.map(characteristic_ids, fn characteristic_id -> get_characteristic(configuration, characteristic_id) end)
+    Enum.map(characteristic_ids, fn characteristic_id ->
+      get_characteristic(configuration, characteristic_id)
+    end)
   end
 
-  def get_characteristic(configuration, characteristic_id), do: find(configuration, :characteristics, characteristic_id)
+  def get_characteristic(configuration, characteristic_id),
+    do: find(configuration, :characteristics, characteristic_id)
+
   def get_device(configuration, device_id), do: find(configuration, :devices, device_id)
-  def get_device_type(configuration, device_type), do: find(configuration, :device_types, device_type)
-  def get_interface(configuration, interface_id), do: find(configuration, :interfaces, interface_id)
+
+  def get_device_type(configuration, device_type),
+    do: find(configuration, :device_types, device_type)
+
+  def get_interface(configuration, interface_id),
+    do: find(configuration, :interfaces, interface_id)
+
   def get_room(configuration, room_id), do: find(configuration, :rooms, room_id)
   def get_group(configuration, group_id), do: find(configuration, :groups, group_id)
 
@@ -144,7 +167,9 @@ defmodule HomeApp.Configuration do
           room -> String.replace_leading(id, "#{room}_", "")
         end
         |> Phoenix.Naming.humanize()
-      name -> name
+
+      name ->
+        name
     end
   end
 
@@ -165,9 +190,13 @@ defmodule HomeApp.Configuration do
 
       case Enum.any?(invalid_referred_ids) do
         true ->
-          message = "Invalid #{relation} #{foreign_key} values: " <> Enum.join(invalid_referred_ids, ", ")
+          message =
+            "Invalid #{relation} #{foreign_key} values: " <> Enum.join(invalid_referred_ids, ", ")
+
           [{relation, message}]
-        false -> []
+
+        false ->
+          []
       end
     end)
   end

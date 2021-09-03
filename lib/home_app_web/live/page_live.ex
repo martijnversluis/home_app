@@ -16,7 +16,8 @@ defmodule HomeAppWeb.PageLive do
       assign(socket, %{
         configuration: configuration,
         values: get_values(configuration) |> IO.inspect(label: "values")
-      })}
+      })
+    }
   end
 
   @impl true
@@ -25,7 +26,8 @@ defmodule HomeAppWeb.PageLive do
   end
 
   @impl true
-  def handle_event(action, %{"device-id" => device_id}, socket) when action in ["activate", "deactivate"] do
+  def handle_event(action, %{"device-id" => device_id}, socket)
+      when action in ["activate", "deactivate"] do
     trigger_device_change(device_id, socket, fn device_info ->
       DeviceDriver.dispatch(device_info, action)
     end)
@@ -67,8 +69,10 @@ defmodule HomeAppWeb.PageLive do
           socket
           |> assign(%{values: Map.put(socket.assigns.values, device_id, value)})
         }
+
       {:error, error} ->
         IO.inspect(error, label: "Error reading value for \"#{device_id}}\"")
+
         {
           :noreply,
           socket

@@ -6,7 +6,7 @@ defmodule HomeApp.Application do
   use Application
 
   def start(_type, _args) do
-    Dotenv.load
+    Dotenv.load()
     Mix.Task.run("loadconfig")
 
     children = [

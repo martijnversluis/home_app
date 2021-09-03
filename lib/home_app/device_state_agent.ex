@@ -10,14 +10,18 @@ defmodule HomeApp.DeviceStateAgent do
       previous_state = Map.get(states, device_id)
 
       case previous_state do
-        ^new_state -> states
+        ^new_state ->
+          states
+
         _ ->
           IO.inspect({previous_state, new_state}, label: "#{device_id} changed")
+
           Phoenix.PubSub.broadcast(
             HomeApp.PubSub,
             "device:state_changed",
             {"device:state_changed", device_id, {previous_state, new_state}}
           )
+
           Map.put(states, device_id, new_state)
       end
     end)

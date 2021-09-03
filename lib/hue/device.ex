@@ -15,16 +15,16 @@ defmodule Hue.Device do
             product_id: nil
 
   def parse(
-    %{
-      "state" => %{} = state,
-      "type" => type,
-      "name" => name,
-      "modelid" => model_id,
-      "manufacturername" => manufacturer_name,
-      "config" => config,
-      "swversion" => software_version
-    } = data,
-    id
+        %{
+          "state" => %{} = state,
+          "type" => type,
+          "name" => name,
+          "modelid" => model_id,
+          "manufacturername" => manufacturer_name,
+          "config" => config,
+          "swversion" => software_version
+        } = data,
+        id
       ) do
     %__MODULE__{
       id: id,

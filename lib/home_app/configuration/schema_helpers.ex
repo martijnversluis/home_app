@@ -8,6 +8,10 @@ defmodule HomeApp.Configuration.SchemaHelpers do
   end
 
   def validate_on(changeset, field, value, fun) do
-    validate_conditional(changeset, fn changeset -> Ecto.Changeset.get_field(changeset, field) === value end, fun)
+    validate_conditional(
+      changeset,
+      fn changeset -> Ecto.Changeset.get_field(changeset, field) === value end,
+      fun
+    )
   end
 end

@@ -31,7 +31,8 @@ defmodule HomeApp.DeviceDriver do
   end
 
   def get_driver(interface_type) do
-    case Application.get_env(:home_app, :device_drivers, []) |> Keyword.get(String.to_atom(interface_type)) do
+    case Application.get_env(:home_app, :device_drivers, [])
+         |> Keyword.get(String.to_atom(interface_type)) do
       nil -> {:error, "No driver configured for #{interface_type}"}
       driver -> {:ok, driver}
     end

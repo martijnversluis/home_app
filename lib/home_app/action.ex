@@ -13,7 +13,8 @@ defmodule HomeApp.Action do
   def trigger(
         %{action: action, target: device_id} = _automation_action,
         %HomeApp.Event{} = _event
-      )  when action in ["activate", "deactivate", "blink"] do
+      )
+      when action in ["activate", "deactivate", "blink"] do
     HomeApp.ConfigurationAgent.get_configuration()
     |> HomeApp.Configuration.get_device_info(device_id)
     |> HomeApp.DeviceDriver.dispatch(action)

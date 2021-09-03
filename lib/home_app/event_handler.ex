@@ -2,13 +2,11 @@ defmodule HomeApp.EventHandler do
   def handle_event(event) do
     HomeApp.ConfigurationAgent.get_configuration()
     |> Map.get(:automations, [])
-    |> Enum.each(
-         fn automation ->
-           if should_trigger_automation?(automation, event) do
-             HomeApp.Action.trigger(automation, event)
-           end
-         end
-       )
+    |> Enum.each(fn automation ->
+      if should_trigger_automation?(automation, event) do
+        HomeApp.Action.trigger(automation, event)
+      end
+    end)
   end
 
   defp should_trigger_automation?(
@@ -38,7 +36,8 @@ defmodule HomeApp.EventHandler do
            type: "device:state_changed",
            data: %{previous_state: nil}
          } = _event
-       ), do: false
+       ),
+       do: false
 
   defp should_trigger_automation?(
          %{
@@ -60,7 +59,11 @@ defmodule HomeApp.EventHandler do
        ) do
     case device_id do
       ^subject ->
-        characteristic = Enum.find(characteristics, fn characteristic -> characteristic.source == characteristic_id end)
+        characteristic =
+          Enum.find(characteristics, fn characteristic ->
+            characteristic.source == characteristic_id
+          end)
+
         previous_characteristic_state = Map.fetch!(previous_state, characteristic_id)
         new_characteristic_state = Map.fetch!(new_state, characteristic_id)
 
@@ -70,7 +73,9 @@ defmodule HomeApp.EventHandler do
           previous_characteristic_state,
           new_characteristic_state
         )
-      _ -> false
+
+      _ ->
+        false
     end
   end
 
@@ -81,21 +86,30 @@ defmodule HomeApp.EventHandler do
          %{type: "binary"} = _characteristic,
          false = _previous_state,
          true = _new_state
-       ), do: true
+       ),
+       do: true
 
   defp should_trigger_device_state_changed_automation?(
          %{event: "deactivated"} = _automation,
          %{type: "binary"} = _characteristic,
          true = _previous_state,
          false = _new_state
-       ), do: true
+       ),
+       do: true
 
   defp should_trigger_device_state_changed_automation?(
          %{event: "state", value: value} = _automation,
          %{type: "string"} = _characteristic,
          _previous_state,
          new_state
-       ), do: value == "#{new_state}"
+       ),
+       do: value == "#{new_state}"
 
-  defp should_trigger_device_state_changed_automation?(_automation, _characteristic, _previous_state, _new_state), do: false
+  defp should_trigger_device_state_changed_automation?(
+         _automation,
+         _characteristic,
+         _previous_state,
+         _new_state
+       ),
+       do: false
 end

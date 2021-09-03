@@ -17,7 +17,9 @@ defmodule HomeApp.Configuration.Characteristic do
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals], empty_values: ["", nil])
+    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals],
+      empty_values: ["", nil]
+    )
     |> cast_embed(:range)
     |> cast_embed(:values)
     |> cast_embed(:states)
@@ -39,7 +41,9 @@ defmodule HomeApp.Configuration.Characteristic do
           %{on: _, off: _} -> changeset
           _ -> Ecto.Changeset.put_change(changeset, field, default_value)
         end
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 
@@ -48,7 +52,9 @@ defmodule HomeApp.Configuration.Characteristic do
       nil ->
         id = Ecto.Changeset.fetch_field!(changeset, :id)
         Ecto.Changeset.put_change(changeset, :source, id)
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 end

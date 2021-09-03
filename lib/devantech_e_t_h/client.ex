@@ -34,6 +34,7 @@ defmodule DevantechETH.Client do
     case :gen_tcp.connect(host, port, [:binary, active: false], 5000) do
       {:ok, sock} ->
         {:ok, %{s | sock: sock}}
+
       {:error, _} ->
         {:backoff, 1000, s}
     end
@@ -41,15 +42,19 @@ defmodule DevantechETH.Client do
 
   def disconnect(info, %{sock: sock} = s) do
     :ok = :gen_tcp.close(sock)
+
     case info do
       {:close, from} ->
         Connection.reply(from, :ok)
+
       {:error, :closed} ->
         :error_logger.format("Connection closed~n", [])
+
       {:error, reason} ->
         reason = :inet.format_error(reason)
         :error_logger.format("Connection error: ~s~n", [reason])
     end
+
     {:connect, :reconnect, %{s | sock: nil}}
   end
 
@@ -61,6 +66,7 @@ defmodule DevantechETH.Client do
     case :gen_tcp.send(sock, data) do
       :ok ->
         {:reply, :ok, s}
+
       {:error, _} = error ->
         {:disconnect, error, error, s}
     end
@@ -70,8 +76,10 @@ defmodule DevantechETH.Client do
     case :gen_tcp.recv(sock, bytes, timeout) do
       {:ok, _value} = ok ->
         {:reply, ok, s}
+
       {:error, :timeout} = timeout ->
         {:reply, timeout, s}
+
       {:error, _} = error ->
         {:disconnect, error, error, s}
     end
@@ -82,7 +90,10 @@ defmodule DevantechETH.Client do
   end
 
   def get_status(socket) do
-    send_and_receive(socket, [@get_status], 8,
+    send_and_receive(
+      socket,
+      [@get_status],
+      8,
       fn <<
            module_id::8,
            system_firmware_major::8,
@@ -112,7 +123,7 @@ defmodule DevantechETH.Client do
   end
 
   def pulse_relay(socket, relay_number, pulse_time_ms) do
-    <<b1::8,b2::8,b3::8,b4::8>>=<<pulse_time_ms::32>>
+    <<b1::8, b2::8, b3::8, b4::8>> = <<pulse_time_ms::32>>
     set_relay(socket, [relay_number, 0, b1, b2, b3, b4])
   end
 
@@ -125,55 +136,53 @@ defmodule DevantechETH.Client do
   end
 
   def get_relays(socket) do
-    send_and_receive(socket, [@get_relays, 1], 5,
-      fn <<_first_byte::8, status_bytes::32>> ->
-        bit_list_to_map(<<status_bytes::32>>)
-      end
-    )
+    send_and_receive(socket, [@get_relays, 1], 5, fn <<_first_byte::8, status_bytes::32>> ->
+      bit_list_to_map(<<status_bytes::32>>)
+    end)
   end
 
   def get_relay(socket, relay_number) do
-    send_and_receive(socket, [@get_relays, relay_number], 5, fn <<status::8, _rest::32>> -> status == 1 end)
+    send_and_receive(socket, [@get_relays, relay_number], 5, fn <<status::8, _rest::32>> ->
+      status == 1
+    end)
   end
 
   def get_inputs(socket) do
-    send_and_receive(socket, [@get_inputs, 1], 2,
-      fn <<_first_byte::8, status_bits::8>> ->
-        bit_list_to_map(<<status_bits::4>>)
-      end
-    )
+    send_and_receive(socket, [@get_inputs, 1], 2, fn <<_first_byte::8, status_bits::8>> ->
+      bit_list_to_map(<<status_bits::4>>)
+    end)
   end
 
   def get_input(socket, input_number) do
-    send_and_receive(socket, [@get_inputs, input_number], 2,
-      fn <<status::8, _rest::8>> ->
-        status == 1
-      end
-    )
+    send_and_receive(socket, [@get_inputs, input_number], 2, fn <<status::8, _rest::8>> ->
+      status == 1
+    end)
   end
 
   def get_analogue_inputs(socket) do
-    send_and_receive(socket, [@get_analogue], 4,
-      fn <<input_1::16, input_2::16>> ->
-        %{
-          1 => value_to_volts(input_1),
-          2 => value_to_volts(input_2)
-        }
-      end
-    )
+    send_and_receive(socket, [@get_analogue], 4, fn <<input_1::16, input_2::16>> ->
+      %{
+        1 => value_to_volts(input_1),
+        2 => value_to_volts(input_2)
+      }
+    end)
   end
 
   def get_analogue_input(socket, input_number) do
     case get_analogue_inputs(socket) do
       {:ok, %{} = values} ->
         {:ok, Map.fetch!(values, input_number)}
+
       {:error, error} ->
         {:error, error}
     end
   end
 
   def get_counter(socket, counter_number) do
-    send_and_receive(socket, [@get_counters, counter_number], 8,
+    send_and_receive(
+      socket,
+      [@get_counters, counter_number],
+      8,
       fn <<counter_value::32, capture_register::32>> ->
         {counter_value, capture_register}
       end
@@ -181,7 +190,7 @@ defmodule DevantechETH.Client do
   end
 
   defp bit_list_to_map(bit_list) do
-    bits = for <<b::1 <- bit_list >>, do: b
+    bits = for <<b::1 <- bit_list>>, do: b
     range = Range.new(Enum.count(bits) - 1, 0)
 
     Enum.reduce(range, %{}, fn i, acc ->
@@ -199,6 +208,7 @@ defmodule DevantechETH.Client do
         {:ok, bytes} = tcp_recv(socket, response_byte_count)
         result = response_fun.(bytes)
         {:ok, result}
+
       {:error, error} ->
         {:error, error}
     end
@@ -213,10 +223,12 @@ defmodule DevantechETH.Client do
         {int, _reset} = Integer.parse(token)
         int
       end)
+
     {a, b, c, d}
   end
 
   defp parse_port(port) when is_integer(port), do: port
+
   defp parse_port(port) when is_binary(port) do
     {int, _rest} = Integer.parse(port)
     int
@@ -225,6 +237,6 @@ defmodule DevantechETH.Client do
   defp value_to_volts(value) do
     max_value = 1023
     max_voltage = 3.3
-    (max_voltage / max_value) * value
+    max_voltage / max_value * value
   end
 end

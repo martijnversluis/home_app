@@ -19,16 +19,17 @@ defmodule HomeApp.DeviceMonitorSupervisor do
     |> Enum.reduce([], fn {%{type: interface_type} = interface, devices}, acc ->
       driver = DeviceDriver.get_driver!(interface_type)
 
-      acc ++ [
-        {
-          HomeApp.DeviceMonitor,
-          {driver, interface, devices}
-        },
-        {
-          driver,
-          {interface}
-        }
-      ]
+      acc ++
+        [
+          {
+            HomeApp.DeviceMonitor,
+            {driver, interface, devices}
+          },
+          {
+            driver,
+            {interface}
+          }
+        ]
     end)
     |> IO.inspect(label: "monitor children")
   end
