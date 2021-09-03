@@ -81,12 +81,12 @@ characteristics:
 interfaces:
   - id: meter_cabinet_eth
     type: devantech_eth
-    host: ds1242.home
+    host: 192.168.1.114
     port: 17123
     polling_interval: 1000
   - id: hue_bridge
     type: hue
-    host: philips-hue.home
+    host: 192.168.1.144
     polling_interval: 1000
     config:
       username: <%= System.get_env("HUE_USERNAME") %>
