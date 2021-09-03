@@ -53,11 +53,11 @@ defmodule Hue.Client do
   def update_light(%Session{username: username} = session, id, %Light.StateChange{} = state_change) do
     session
     |> put(
-         "/#{username}/lights/#{id}/state",
-         state_change
-         |> Light.StateChange.translate_to_hue()
-         |> remove_empty_values()
-       )
+      "/#{username}/lights/#{id}/state",
+      state_change
+      |> Light.StateChange.translate_to_hue()
+      |> remove_empty_values()
+    )
   end
 
   def update_light(%Session{} = session, light_or_id, %{} = state_change) do
@@ -110,14 +110,14 @@ defmodule Hue.Client do
 
   defp perform_request(%HTTPoison.Request{} = request) do
     request
-#    |> IO.inspect(label: "Hue request")
     |> HTTPoison.request()
-#    |> IO.inspect(label: "Hue response")
     |> process_response()
   end
 
   defp process_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    body |> Jason.decode!() |> process_response()
+    body
+    |> Jason.decode!()
+    |> process_response()
   end
 
   defp process_response({:error, %HTTPoison.Error{reason: reason}}) do
@@ -125,7 +125,9 @@ defmodule Hue.Client do
   end
 
   defp process_response(response) when is_list(response) do
-    response |> List.first() |> process_response()
+    response
+    |> List.first()
+    |> process_response()
   end
 
   defp process_response(%{"success" => %{} = success_response}) do

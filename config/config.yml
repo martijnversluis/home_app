@@ -69,6 +69,10 @@ characteristics:
       max: 100
     unit: "%"
     writable: false
+  - id: hue_dimmer_button
+    source: button
+    type: string
+    writable: false
   - id: hue_dimmer_button_event
     source: button_event
     type: string
@@ -156,7 +160,11 @@ device_types:
     icon: "sun"
   - id: hue_dimmer_switch
     connection: hue_dimmer_switch
-    characteristics: [hue_dimmer_button_event_description, hue_dimmer_button_event, hue_sensor_battery_level]
+    characteristics:
+    - hue_dimmer_button_event_description
+    - hue_dimmer_button_event
+    - hue_dimmer_button
+    - hue_sensor_battery_level
     icon: "sliders-v-alt"
 
 devices:
@@ -331,12 +339,12 @@ automations:
     target: hallway_light
   - id: evening_turn_off_doorbell
     event: time
-    time: 19:00
+    value: 19:00
     action: deactivate
     target: doorbell_switch
   - id: morning_turn_on_doorbell
     event: time
-    time: 7:00
+    value: 7:00
     action: activate
     target: doorbell_switch
   - id: sunrise_turn_off_lights
@@ -365,3 +373,17 @@ automations:
       target: kitchen_counter_lights
     - action: activate
       target: living_room_light
+  - id: turn_on_kitchen_table_lights_with_hue_remote
+    event: state
+    subject: hue_dimmer_switch
+    characteristic: button
+    value: 2
+    action: activate
+    target: kitchen_table_lights
+  - id: turn_off_kitchen_table_lights_with_hue_remote
+    event: state
+    subject: hue_dimmer_switch
+    characteristic: button
+    value: 3
+    action: deactivate
+    target: kitchen_table_lights
