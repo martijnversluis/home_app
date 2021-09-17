@@ -17,24 +17,26 @@ import {Socket} from "phoenix"
 import NProgress from "nprogress"
 import {LiveSocket} from "phoenix_live_view"
 
-const hooks = {
-  NumericSlider: {
-    mounted() {
-      this.el.addEventListener("change", e => {
-        const meta = this.__view.extractMeta(this.el, {});
+const NumericSlider = {
+  mounted() {
+    this.el.addEventListener("change", e => {
+      const meta = this.__view.extractMeta(this.el, {});
 
-        this.pushEvent(
-          "device_change",
-          {
-            characteristic: meta.characteristic,
-            device_id: meta['device-id'],
-            value: meta.value
-          }
-        );
-      })
-    }
+      this.pushEvent(
+        "device_change",
+        {
+          characteristic: meta.characteristic,
+          device_id: meta['device-id'],
+          value: meta.value
+        }
+      );
+    })
   }
-}
+};
+
+const hooks = {
+  NumericSlider,
+};
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks});

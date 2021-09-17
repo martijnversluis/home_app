@@ -4,8 +4,10 @@
 
 $blue: #347bdc;
 $blue-highlight: #54a2ed;
+$black: #000;
 $white: #fff;
 $white-smoke: #f2f4f6;
+$gold: #d4b959;
 $silver: #aeb8c3;
 $grey: #8092a6;
 $dark-grey: #20232a;
@@ -18,7 +20,6 @@ $content-background: $white;
 $text-color: $dark-grey;
 $highlight-color: $blue;
 
-//$base-font: 'Gidolinya-Regular', sans-serif;
 $base-font: 'Lato', sans-serif;
 $wrapper-width: 2000px;
 
@@ -150,56 +151,59 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   &__item {
-    background-color: $content-background;
+    background: $blue;
     border-radius: var(--border-radius);
     flex: 1 0 18rem;
-    margin: 1rem;
+    margin: 0.5rem;
 
     &__title {
       align-items: center;
-      background: $blue;
       border-top-left-radius: var(--border-radius);
       border-top-right-radius: var(--border-radius);
       color: $white;
       display: flex;
-      font-size: clamp(0.9rem, 1.72vw, 1.3rem);
+      font-size: calc(min(1.3rem, max(0.9rem, 1.72vw)));
       font-weight: 500;
       letter-spacing: 1px;
+      margin-top: 0.5rem;
       padding: 0 1rem;
     }
 
     &__icon {
       color: $white;
-      font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+      font-size: calc(min(1.8rem, max(1.2rem, 1.8vw)));
       margin-right: 1rem;
     }
 
     &__content {
-      padding: 1rem;
+      padding: 0.5rem;
     }
   }
 }
 
 .device-list {
   &__items {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 0.6rem;
     list-style: none;
   }
 
   &__item {
-    flex: 1 0 6rem;
     position: relative;
+
+    &:not(:last-child) {
+      margin-bottom: 0.5rem;
+    }
   }
 }
 
 .device {
+  --device-color: #{$black};
+  --device-light-color: #{lighten($black, 15%)};
+
   appearance: none;
   -webkit-appearance: none;
   align-items: center;
-  aspect-ratio: 1/1;
-  background: var(--value-color, var(--device-color, #{$grey}));
+  background: var(--device-color);
+  background: linear-gradient(135deg, var(--device-color) 0%, var(--device-light-color) 100%);
   border: none;
   border-radius: 0.6rem;
   display: flex;
@@ -208,18 +212,27 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   margin: 0;
   padding: 0;
+  transition: background 300ms ease-out;
   width: 100%;
 
+  &--inactive {
+    --device-color: #{lighten($blue, 10%)};
+    --device-light-color: #{lighten($blue, 15%)};
+  }
+
   &--active {
-    --device-color: #{$blue};
+    --device-color: #{lighten($gold, 0%)};
+    --device-light-color: #{lighten($gold, 5%)};
   }
 
   &--danger {
     --device-color: #{$red};
+    --device-light-color: #{lighten($red, 15%)};
   }
 
   &--neutral {
     --device-color: #{$dark-grey};
+    --device-light-color: #{lighten($dark-grey, 15%)};
   }
 
   &--unknown {
@@ -230,10 +243,10 @@ h1, h2, h3, h4, h5, h6 {
   &__inner {
     align-items: center;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    $padding: clamp(0rem, 1.3vw, 1rem);
-    padding: $padding $padding 0 $padding;
+    flex-direction: row;
+    justify-items: center;
+    padding: calc(min(1rem, max(0rem, 1.3vw)));
+    width: 100%;
   }
 
   &__type {
@@ -243,20 +256,23 @@ h1, h2, h3, h4, h5, h6 {
   &__icon {
     color: $white;
     display: inline-block;
-    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    font-size: calc(min(1.3rem, max(0.8rem, 1.7vw)));
+    margin-right: calc(min(0.65rem, max(0.4rem, 0.85vw)));
     text-align: center;
   }
 
   &__button-icon {
     color: $white;
-    font-size: clamp(1.8rem, 3vw, 2.2rem);
+    font-size: calc(min(2.2rem, max(1.8rem, 3vw)));
+    margin: -0.6rem 0;
   }
 
   &__status {
     color: $white;
     display: block;
+    flex: 1 1 auto;
     font-size: 0.9rem;
-    text-align: center;
+    text-align: left;
     width: 100%;
   }
 
@@ -271,17 +287,17 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     @mixin slider-track {
-      background: tomato;
+      background: #{rgba($dark-grey, 0.3)};
       border-radius: 0.6rem;
       height: 1.2rem;
     }
 
     @mixin slider-thumb {
       -webkit-appearance: none;
+      background: #{rgba($white, 0.8)};
+      border-radius: 50%;
       height: 1.2rem;
       width: 1.2rem;
-      background: pink;
-      border-radius: 50%;
     }
 
     &::-webkit-slider-runnable-track {
