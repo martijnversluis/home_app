@@ -135,7 +135,7 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     flex-wrap: wrap;
     list-style: none;
-    padding: 1rem;
+    padding: 0.5rem;
 
     $column-count: round($wrapper-width / $column-base);
 
