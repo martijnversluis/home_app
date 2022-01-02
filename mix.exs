@@ -50,7 +50,8 @@ defmodule HomeApp.MixProject do
       {:yaml, "~> 0.1.0"},
       {:timex, "~> 3.7.5"},
       {:httpoison, "~> 1.8"},
-      {:dotenv, "~> 3.0.0"}
+      {:dotenv, "~> 3.0.0"},
+      {:emqtt, github: "emqx/emqtt", tag: "v1.2.4"}
     ]
   end
 

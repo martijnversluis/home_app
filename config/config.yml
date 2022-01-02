@@ -94,8 +94,18 @@ interfaces:
     polling_interval: 1000
     config:
       username: <%= System.get_env("HUE_USERNAME") %>
+  - id: watcher_rpi_1
+    type: mqtt_io
+    host: homeapp.home
+    port: 1883
+    config:
+      topic: home/input/#
 
 device_types:
+  - id: mqtt_io_digital_input
+    connection: mqtt_io_digital_input
+    characteristics: [on]
+    icon: "webcam"
   - id: eth_temperature
     connection: devantech_eth_analogue_input
     config:
@@ -168,6 +178,11 @@ device_types:
     icon: "sliders-v-alt"
 
 devices:
+  - id: mqtt_io_test_port
+    type: mqtt_io_digital_input
+    room: meter_cabinet
+    interface: watcher_rpi_1
+    pin: doorbell
   - id: meter_cabinet_temperature
     type: eth_temperature
     room: meter_cabinet
