@@ -84,13 +84,9 @@ defmodule HomeAppWeb.PageLive do
     HomeApp.ConfigurationAgent.get_configuration()
   end
 
-  defp get_values(%{devices: devices} = configuration) do
+  defp get_values(%{devices: devices} = _configuration) do
     for %{id: device_id} = _device <- devices, into: %{} do
       {device_id, HomeApp.DeviceStateAgent.get_device_state(device_id)}
-#      case Configuration.get_device_info(configuration, device_id) |> DeviceControl.get_value() do
-#        {:ok, value} -> {device_id, value}
-#        {:error, _error} -> {device_id, nil}
-#      end
     end
   end
 end

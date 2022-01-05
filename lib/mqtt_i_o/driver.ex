@@ -19,7 +19,9 @@ defmodule MqttIO.Driver do
     case Enum.find(devices, fn device -> device.id == device_id end) do
       %{} = device ->
         HomeApp.DeviceStateAgent.set_device_state(device_id, device_value(device, payload))
-      _ -> IO.inspect({topic, payload, state}, label: "ignored mqtt message")
+
+      _ ->
+        IO.inspect({topic, payload, state}, label: "ignored mqtt message")
     end
 
     {:ok, state}
@@ -30,19 +32,22 @@ defmodule MqttIO.Driver do
     {:ok, state}
   end
 
-  def subscription(status, topic_filter, state) do
+  def subscription(_status, _topic_filter, state) do
     {:ok, state}
   end
 
-  def terminate(reason, state) do
+  def terminate(_reason, _state) do
     # tortoise doesn't care about what you return from terminate/2,
     # that is in alignment with other behaviours that implement a
     # terminate-callback
     :ok
   end
 
-  defp device_value(%{type: "mqtt_io_digital_input"} = _device, "ON" = _value), do: %{"on" => true}
-  defp device_value(%{type: "mqtt_io_digital_input"} = _device, "OFF" = _value), do: %{"on" => false}
+  defp device_value(%{type: "mqtt_io_digital_input"} = _device, "ON" = _value),
+    do: %{"on" => true}
+
+  defp device_value(%{type: "mqtt_io_digital_input"} = _device, "OFF" = _value),
+    do: %{"on" => false}
 
   defp device_value(%{} = device, value) do
     IO.inspect({device, value}, label: "unrecognized value")
