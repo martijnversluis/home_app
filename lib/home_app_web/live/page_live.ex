@@ -1,6 +1,6 @@
 defmodule HomeAppWeb.PageLive do
   alias HomeApp.Configuration
-  alias HomeApp.DeviceDriver
+  alias HomeApp.DeviceControl
   use HomeAppWeb, :live_view
 
   @impl true
@@ -29,7 +29,7 @@ defmodule HomeAppWeb.PageLive do
   def handle_event(action, %{"device-id" => device_id}, socket)
       when action in ["activate", "deactivate"] do
     trigger_device_change(device_id, socket, fn device_info ->
-      DeviceDriver.dispatch(device_info, action)
+      DeviceControl.dispatch(device_info, action)
     end)
   end
 
@@ -44,7 +44,7 @@ defmodule HomeAppWeb.PageLive do
         socket
       ) do
     trigger_device_change(device_id, socket, fn device_info ->
-      DeviceDriver.dispatch(device_info, "change", %{characteristic => value})
+      DeviceControl.dispatch(device_info, "change", %{characteristic => value})
     end)
   end
 
@@ -62,7 +62,7 @@ defmodule HomeAppWeb.PageLive do
   defp reload_device_state([] = _devices, socket), do: {:noreply, socket}
 
   defp reload_device_state(%{id: device_id} = device_info, socket) do
-    case DeviceDriver.get_value(device_info) do
+    case DeviceControl.get_value(device_info) do
       {:ok, value} ->
         {
           :noreply,
@@ -86,10 +86,11 @@ defmodule HomeAppWeb.PageLive do
 
   defp get_values(%{devices: devices} = configuration) do
     for %{id: device_id} = _device <- devices, into: %{} do
-      case Configuration.get_device_info(configuration, device_id) |> DeviceDriver.get_value() do
-        {:ok, value} -> {device_id, value}
-        {:error, _error} -> {device_id, nil}
-      end
+      {device_id, HomeApp.DeviceStateAgent.get_device_state(device_id)}
+#      case Configuration.get_device_info(configuration, device_id) |> DeviceControl.get_value() do
+#        {:ok, value} -> {device_id, value}
+#        {:error, _error} -> {device_id, nil}
+#      end
     end
   end
 end

@@ -1,5 +1,5 @@
 defmodule HomeApp.DeviceMonitor do
-  alias HomeApp.{Configuration, ConfigurationAgent, DeviceDriver, DeviceStateAgent}
+  alias HomeApp.{Configuration, ConfigurationAgent, DeviceControl, DeviceStateAgent}
   use GenServer
 
   def child_spec({driver, %{id: interface_id, type: interface_type} = interface, devices}) do
@@ -36,7 +36,7 @@ defmodule HomeApp.DeviceMonitor do
       ConfigurationAgent.get_configuration()
       |> Configuration.get_device_info(device_id)
 
-    response = DeviceDriver.get_value(driver, device_info)
+    response = DeviceControl.get_value(driver, device_info)
 
     case response do
       {:ok, value} -> DeviceStateAgent.set_device_state(device_id, value)

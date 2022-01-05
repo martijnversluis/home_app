@@ -1,20 +1,11 @@
 defmodule Hue.Driver do
   alias Hue.Client
-  use GenServer
-
-  def start_link({interface}) do
-    GenServer.start_link(__MODULE__, {interface}, name: name(interface))
-  end
+  use HomeApp.DeviceDriver
 
   def init({%{host: host, port: port} = _interface}) do
     {:ok, client} = Client.start_link(host, port)
     {:ok, client}
   end
-
-  defp name(%{interface: id, interface_type: type} = _device_info),
-    do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
-
-  defp name(%{id: id, type: type} = _interface), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 
   def activate(device_info), do: GenServer.call(name(device_info), {:activate, device_info})
   def deactivate(device_info), do: GenServer.call(name(device_info), {:deactivate, device_info})

@@ -46,12 +46,12 @@ defmodule HomeApp.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.5"},
       {:yaml, "~> 0.1.0"},
       {:timex, "~> 3.7.5"},
       {:httpoison, "~> 1.8"},
       {:dotenv, "~> 3.0.0"},
-      {:emqtt, github: "emqx/emqtt", tag: "v1.2.4"}
+      {:tortoise, "~> 0.10"}
     ]
   end
 

@@ -17,6 +17,6 @@ defmodule HomeApp.Action do
       when action in ["activate", "deactivate", "blink"] do
     HomeApp.ConfigurationAgent.get_configuration()
     |> HomeApp.Configuration.get_device_info(device_id)
-    |> HomeApp.DeviceDriver.dispatch(action)
+    |> HomeApp.DeviceControl.dispatch(action)
   end
 end

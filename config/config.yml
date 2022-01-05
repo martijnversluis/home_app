@@ -104,7 +104,7 @@ interfaces:
 device_types:
   - id: mqtt_io_digital_input
     connection: mqtt_io_digital_input
-    characteristics: [on]
+    characteristics: [binary_input]
     icon: "webcam"
   - id: eth_temperature
     connection: devantech_eth_analogue_input
@@ -182,7 +182,7 @@ devices:
     type: mqtt_io_digital_input
     room: meter_cabinet
     interface: watcher_rpi_1
-    pin: doorbell
+    pin: 21
   - id: meter_cabinet_temperature
     type: eth_temperature
     room: meter_cabinet

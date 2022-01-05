@@ -1,5 +1,5 @@
 defmodule HomeApp.DeviceMonitorSupervisor do
-  alias HomeApp.{Configuration, ConfigurationAgent, DeviceDriver}
+  alias HomeApp.{Configuration, ConfigurationAgent, DeviceControl}
 
   def child_spec(_) do
     %{
@@ -17,20 +17,25 @@ defmodule HomeApp.DeviceMonitorSupervisor do
     ConfigurationAgent.get_configuration()
     |> Configuration.get_interfaces_with_devices()
     |> Enum.reduce([], fn {%{type: interface_type} = interface, devices}, acc ->
-      driver = DeviceDriver.get_driver!(interface_type)
-
-      acc ++
-        [
-          {
-            HomeApp.DeviceMonitor,
-            {driver, interface, devices}
-          },
-          {
-            driver,
-            {interface}
-          }
-        ]
+      driver = DeviceControl.get_driver!(interface_type)
+      acc ++ monitor_config(driver, interface, devices) ++ driver_config(driver, interface)
     end)
     |> IO.inspect(label: "monitor children")
+  end
+
+  defp monitor_config(driver, interface, devices) do
+    [
+      {
+        driver.monitor_module() || HomeApp.DeviceMonitor,
+        {driver, interface, devices}
+      }
+    ]
+  end
+
+  defp driver_config(driver, interface) do
+    case driver.monitor_module() do
+      nil -> [{driver, {interface}}]
+      _ -> []
+    end
   end
 end

@@ -1,45 +1,23 @@
 defmodule HomeApp.DeviceDriver do
-  def dispatch(devices, action, parameters \\ %{})
+  defmacro __using__(opts) do
+    quote location: :keep, bind_quoted: [opts: opts] do
+      use GenServer
 
-  def dispatch(devices, action, parameters) when is_list(devices) do
-    Enum.each(devices, fn device ->
-      dispatch(device, action, parameters)
-    end)
-  end
+      def monitor_module(), do: unquote(Keyword.get(opts, :monitor_with))
 
-  def dispatch(%{interface_type: interface_type} = device, action, parameters) do
-    driver = get_driver!(interface_type)
+      def init(state) do
+        {:ok, state}
+      end
 
-    case action do
-      "activate" -> driver.activate(device)
-      "deactivate" -> driver.deactivate(device)
-      "blink" -> driver.blink(device)
-      "change" -> driver.change(device, parameters)
+      def start_link({interface}) do
+        GenServer.start_link(__MODULE__, {interface}, name: name(interface))
+      end
+
+      defp name(%{interface: id, interface_type: type} = _device_info),
+        do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+
+      defp name(%{id: id, type: type} = _interface),
+        do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
     end
-  end
-
-  def get_value(%{interface_type: interface_type} = device) do
-    get_value(get_driver!(interface_type), device)
-  end
-
-  def get_value(driver, device) do
-    try do
-      driver.get_value(device)
-    catch
-      :exit, _value -> {:error, :no_connection}
-    end
-  end
-
-  def get_driver(interface_type) do
-    case Application.get_env(:home_app, :device_drivers, [])
-         |> Keyword.get(String.to_atom(interface_type)) do
-      nil -> {:error, "No driver configured for #{interface_type}"}
-      driver -> {:ok, driver}
-    end
-  end
-
-  def get_driver!(interface_type) do
-    {:ok, driver} = get_driver(interface_type)
-    driver
   end
 end

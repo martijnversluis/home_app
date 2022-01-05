@@ -13,7 +13,8 @@ config :home_app, :yml_config, "config/config.yml"
 
 config :home_app, :device_drivers,
   devantech_eth: DevantechETH.Driver,
-  hue: Hue.Driver
+  hue: Hue.Driver,
+  mqtt_io: MqttIO.Driver
 
 config :home_app, :notifiers, http: HTTPNotifier
 

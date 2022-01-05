@@ -105,7 +105,9 @@ defmodule HomeAppWeb.DeviceHelpers do
         end)
       end)
 
-    common_characteristics = Configuration.get_characteristics(configuration, common_characteristic_ids)
+    common_characteristics =
+      Configuration.get_characteristics(configuration, common_characteristic_ids)
+
     grouped_values = group_values(common_characteristics, values)
 
     %{
