@@ -9,6 +9,8 @@ defmodule HomeApp.DeviceDriver do
         {:ok, state}
       end
 
+      defoverridable init: 1
+
       def start_link({interface}) do
         GenServer.start_link(__MODULE__, {interface}, name: name(interface))
       end
