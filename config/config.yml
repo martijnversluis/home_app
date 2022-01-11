@@ -90,7 +90,7 @@ interfaces:
     polling_interval: 1000
   - id: hue_bridge
     type: hue
-    host: 192.168.1.144
+    host: 192.168.1.145
     polling_interval: 1000
     config:
       username: <%= System.get_env("HUE_USERNAME") %>
