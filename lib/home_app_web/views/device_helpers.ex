@@ -230,6 +230,7 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp binary_state(0), do: false
   defp binary_state(1.0), do: true
   defp binary_state(1), do: true
+  defp binary_state(nil), do: false
 
   defp binary_state(float) when is_float(float) do
     round(float) |> binary_state()
