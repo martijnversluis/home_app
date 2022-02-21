@@ -183,6 +183,7 @@ devices:
     room: meter_cabinet
     interface: watcher_rpi_1
     pin: 21
+    monitor_hold: true
   - id: meter_cabinet_temperature
     type: eth_temperature
     room: meter_cabinet

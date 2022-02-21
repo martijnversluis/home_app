@@ -18,6 +18,7 @@ defmodule HomeApp.Application do
       HomeApp.DeviceStateAgent,
       HomeApp.EventMonitor,
       {HomeApp.Clock, {HomeApp.PubSub, "clock:tick"}}
+      HomeApp.DeviceHoldMonitor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
