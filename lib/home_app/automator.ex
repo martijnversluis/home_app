@@ -1,5 +1,23 @@
-defmodule HomeApp.EventHandler do
-  def handle_event(event) do
+defmodule HomeApp.Automator do
+  use GenServer
+  alias HomeApp.Event
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, {}, name: __MODULE__)
+  end
+
+  def init(_) do
+    Event.subscribe(HomeApp.PubSub, "device:state_changed")
+    Event.subscribe(HomeApp.PubSub, "clock:tick")
+    {:ok, {}}
+  end
+
+  def handle_info(%Event{} = event, socket) do
+    handle_event(event)
+    {:noreply, socket}
+  end
+
+  defp handle_event(event) do
     HomeApp.ConfigurationAgent.get_configuration()
     |> Map.get(:automations, [])
     |> Enum.each(fn automation ->
@@ -14,9 +32,9 @@ defmodule HomeApp.EventHandler do
            event: "time",
            value: automation_time
          } = _automation,
-         %{
+         %Event{
            type: "clock:tick",
-           data: %{time: event_time}
+           time: event_time
          } = _event
        ) do
     [automation_hours, automation_minutes] =

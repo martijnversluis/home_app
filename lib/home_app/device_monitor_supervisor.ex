@@ -35,7 +35,7 @@ defmodule HomeApp.DeviceMonitorSupervisor do
   defp driver_config(driver, interface) do
     case driver.monitor_module() do
       nil -> [{driver, {interface}}]
-      _ -> []
+      _ -> [{driver, {interface}}]
     end
   end
 end

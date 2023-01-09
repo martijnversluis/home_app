@@ -8,6 +8,7 @@ defmodule HomeApp.Configuration.Device do
     field(:room, :string)
     field(:interface, :string)
     field(:pin, :integer)
+    field(:monitor_hold, :boolean, default: true)
   end
 
   def changeset(struct, attributes) do
