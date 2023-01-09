@@ -204,6 +204,7 @@ devices:
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 1
+    monitor_hold: true
   - id: meter_cabinet_input_3
     type: eth_digital_input
     room: meter_cabinet

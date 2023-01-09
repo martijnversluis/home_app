@@ -1,21 +1,27 @@
 defmodule HomeApp.Event do
-  @device_state_changed "device:state_changed"
-  @clock_tick "clock:tick"
+  defstruct type: nil, subject: nil, data: %{}, time: nil
 
-  defstruct type: nil, subject: nil, data: %{}
+  def new(type), do: new(type, nil)
+  def new(type, subject), do: new(type, subject, %{})
 
-  def device_state_changed(subject, data) do
+  def new(type, subject, data) do
     %__MODULE__{
-      type: @device_state_changed,
+      type: type,
       subject: subject,
-      data: data
+      data: data,
+      time: current_time()
     }
   end
 
-  def clock_tick(data) do
-    %__MODULE__{
-      type: @clock_tick,
-      data: data
-    }
+  def broadcast(pub_sub_module, %__MODULE__{type: event_type} = event) do
+    Phoenix.PubSub.broadcast(pub_sub_module, event_type, event)
+  end
+
+  def subscribe(pub_sub_module, event_type) do
+    Phoenix.PubSub.subscribe(pub_sub_module, event_type)
+  end
+
+  defp current_time() do
+    Timex.Timezone.convert(Timex.now(), Timex.Timezone.local())
   end
 end

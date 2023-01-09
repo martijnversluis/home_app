@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # Configure your database
 config :home_app, HomeApp.Repo,

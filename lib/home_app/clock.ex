@@ -1,11 +1,12 @@
 defmodule HomeApp.Clock do
   use GenServer
+  alias HomeApp.Event
 
-  def start_link({_pub_sub_module, _event_name} = state) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, {}, name: __MODULE__)
   end
 
-  def init({_pub_sub_module, _event_name} = state) do
+  def init(state) do
     schedule_next_tick()
     {:ok, state}
   end
@@ -18,13 +19,9 @@ defmodule HomeApp.Clock do
     |> :timer.send_after(__MODULE__, :tick)
   end
 
-  def handle_info(:tick, {pub_sub_module, event_name} = state) do
-    Phoenix.PubSub.broadcast(
-      pub_sub_module,
-      event_name,
-      {event_name, current_time()}
-    )
-
+  def handle_info(:tick, state) do
+    Event.broadcast(HomeApp.PubSub, Event.new("clock:tick"))
+    schedule_next_tick()
     {:noreply, state}
   end
 

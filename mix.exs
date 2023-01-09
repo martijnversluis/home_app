@@ -51,7 +51,7 @@ defmodule HomeApp.MixProject do
       {:timex, "~> 3.7.5"},
       {:httpoison, "~> 1.8"},
       {:dotenv, "~> 3.0.0"},
-      {:tortoise, "~> 0.10"}
+      {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]}
     ]
   end
 
