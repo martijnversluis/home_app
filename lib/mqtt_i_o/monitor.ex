@@ -12,21 +12,19 @@ defmodule MqttIO.Monitor do
     GenServer.start_link(__MODULE__, {driver, interface, devices}, name: name(interface))
   end
 
-  def init(
-        {
-          driver,
-          %{
-            config: %{
-              topic: topic
-            }
-          } = interface,
-          devices
-        }
-      ) do
+  def init({
+        driver,
+        %{
+          config: %{
+            topic: topic
+          }
+        } = interface,
+        devices
+      }) do
     {:ok, pid} =
       opts(interface)
       |> IO.inspect(label: "MQTT options")
-      |> :emqtt.start_link
+      |> :emqtt.start_link()
 
     {:ok, _} = :emqtt.connect(pid)
     {:ok, _, _} = :emqtt.subscribe(pid, topic)
@@ -43,6 +41,7 @@ defmodule MqttIO.Monitor do
     case Enum.find(devices, fn device -> device.id == device_id end) do
       %{} = device ->
         driver.device_state_changed(interface, device, payload)
+
       _ ->
         IO.inspect({device_id, payload, state}, label: "ignored mqtt message")
     end

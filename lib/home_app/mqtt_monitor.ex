@@ -15,7 +15,7 @@ defmodule HomeApp.MQTTMonitor do
   end
 
   def init({pub_sub, %{host: _host, port: _port} = opts}) do
-    {:ok, pid} = opts(opts) |> :emqtt.start_link
+    {:ok, pid} = opts(opts) |> :emqtt.start_link()
     {:ok, _} = :emqtt.connect(pid)
     {:ok, _, _} = :emqtt.subscribe(pid, "#{@topic}#")
     {:ok, {pub_sub, pid, opts}}
@@ -29,7 +29,12 @@ defmodule HomeApp.MQTTMonitor do
         {pub_sub, _pid, %{} = _opts} = state
       ) do
     IO.inspect({device_id, payload, state}, label: "mqtt message")
-    Event.broadcast(HomeApp.PubSub, Event.new("device:state_reported", device_id, %{on: payload == "ON"}))
+
+    Event.broadcast(
+      HomeApp.PubSub,
+      Event.new("device:state_reported", device_id, %{on: payload == "ON"})
+    )
+
     {:noreply, state}
   end
 

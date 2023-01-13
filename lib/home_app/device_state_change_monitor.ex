@@ -11,16 +11,24 @@ defmodule HomeApp.DeviceStateChangeMonitor do
     {:ok, {}}
   end
 
-  def handle_info(%Event{type: "device:state_reported", subject: device_id, data: new_state}, socket) do
+  def handle_info(
+        %Event{type: "device:state_reported", subject: device_id, data: new_state},
+        socket
+      ) do
     previous_state = DeviceStateAgent.get_device_state(device_id)
 
     case previous_state do
       ^new_state ->
         IO.inspect(new_state, label: "state for #{device_id} unchanged")
+
       _ ->
         IO.inspect(new_state, label: "state for #{device_id} CHANGED")
         DeviceStateAgent.set_device_state(device_id, new_state)
-        Event.broadcast(HomeApp.PubSub, Event.new("device:state_changed", device_id, {previous_state, new_state}))
+
+        Event.broadcast(
+          HomeApp.PubSub,
+          Event.new("device:state_changed", device_id, {previous_state, new_state})
+        )
     end
 
     {:noreply, socket}
