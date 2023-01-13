@@ -21,6 +21,14 @@ defmodule HomeApp.Application do
       HomeApp.Automator,
       HomeApp.DeviceHoldMonitor,
       {
+        Smoov.Monitor,
+        {
+          HomeApp.PubSub,
+          60000,
+          ["NLALLEGO013429"]
+        }
+      },
+      {
         HomeApp.MQTTMonitor,
         {
           HomeApp.PubSub,
