@@ -46,6 +46,8 @@ defmodule HomeApp.DeviceHoldMonitor do
     end
   end
 
+  def handle_info(%Event{}, state), do: {:noreply, state}
+
   def handle_info({:broadcast_device_hold, device_id}, state) do
     {timer_id, hold_count} = Map.get(state, device_id)
     Event.broadcast(HomeApp.PubSub, Event.new("device:hold", device_id, %{count: hold_count}))
