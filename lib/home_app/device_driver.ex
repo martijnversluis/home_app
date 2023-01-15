@@ -15,6 +15,14 @@ defmodule HomeApp.DeviceDriver do
         GenServer.start_link(__MODULE__, {interface}, name: name(interface))
       end
 
+      def get_value(interface, device_info) do
+        GenServer.call(name(interface), {:get_value, interface, device_info})
+      end
+
+      def handle_call({:get_value, interface, device_info}, _, state) do
+        {:reply, get_device_value(interface, device_info, state), state}
+      end
+
       defp name(%{interface: id, interface_type: type} = _device_info),
         do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 

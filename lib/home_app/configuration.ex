@@ -47,7 +47,6 @@ defmodule HomeApp.Configuration do
       {:ok, yaml} ->
         yaml
         |> YAML.Parser.parse!()
-        |> IO.inspect(label: "parsed yaml")
         |> parse!()
         |> strip_structs()
 
@@ -91,6 +90,9 @@ defmodule HomeApp.Configuration do
   def get_device_info(configuration, device_ids) when is_list(device_ids) do
     Enum.map(device_ids, fn device_id -> get_device_info(configuration, device_id) end)
   end
+
+  def get_device_info(configuration, %{id: device_id} = device),
+    do: get_device_info(configuration, device_id)
 
   def get_device_info(configuration, device_id) do
     case get_group(configuration, device_id) do

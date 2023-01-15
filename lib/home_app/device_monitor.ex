@@ -1,5 +1,5 @@
 defmodule HomeApp.DeviceMonitor do
-  alias HomeApp.{Configuration, ConfigurationAgent, DeviceControl, DeviceStateAgent}
+  alias HomeApp.{DeviceControl, Event}
   use GenServer
 
   def child_spec({driver, %{id: interface_id, type: interface_type} = interface, devices}) do
@@ -16,6 +16,7 @@ defmodule HomeApp.DeviceMonitor do
   defp name(%{id: id, type: type} = _interface), do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 
   def init({driver, %{polling_interval: polling_interval} = interface, devices}) do
+    IO.inspect(driver, label: "init device monitor")
     process = name(interface)
     send(process, :update)
     :timer.send_interval(polling_interval, process, :update)
@@ -26,21 +27,22 @@ defmodule HomeApp.DeviceMonitor do
     GenServer.call(pid, :update)
   end
 
-  def handle_info(:update, {driver, _interface, devices} = state) do
-    for device <- devices, do: update_device(driver, device)
-    {:noreply, state}
-  end
+  def handle_info(:update, {driver, %{type: interface_type} = interface, devices} = state) do
+    for {device_id, response} <-
+          DeviceControl.get_value(interface, devices)
+          |> IO.inspect(label: "device state for #{interface_type}") do
+      case response do
+        {:ok, value} ->
+          Event.broadcast(
+            HomeApp.PubSub,
+            Event.new("device:state_reported", device_id, value)
+          )
 
-  defp update_device(driver, %{id: device_id} = _device) do
-    device_info =
-      ConfigurationAgent.get_configuration()
-      |> Configuration.get_device_info(device_id)
-
-    response = DeviceControl.get_value(driver, device_info)
-
-    case response do
-      {:ok, value} -> DeviceStateAgent.set_device_state(device_id, value)
-      {:error, error} -> {:error, error}
+        {:error, description} ->
+          IO.puts("Error getting value for #{device_id}")
+      end
     end
+
+    {:noreply, state}
   end
 end

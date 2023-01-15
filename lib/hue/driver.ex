@@ -10,7 +10,6 @@ defmodule Hue.Driver do
   def activate(device_info), do: GenServer.call(name(device_info), {:activate, device_info})
   def deactivate(device_info), do: GenServer.call(name(device_info), {:deactivate, device_info})
   def blink(device_info), do: GenServer.call(name(device_info), {:blink, device_info})
-  def get_value(device_info), do: GenServer.call(name(device_info), {:get_value, device_info})
 
   def change(device_info, %{} = parameters),
     do: GenServer.call(name(device_info), {:change, device_info, parameters})
@@ -65,98 +64,6 @@ defmodule Hue.Driver do
 
   def handle_call(
         {
-          :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device
-        },
-        _,
-        client
-      )
-      when connection in ["hue_dimmable_light", "hue_go"] do
-    %{state: %{"on" => on, "bri" => brightness}} =
-      login(host, username)
-      |> Client.get_light(pin)
-
-    {
-      :reply,
-      {:ok, %{"on" => on, "brightness" => brightness}},
-      client
-    }
-  end
-
-  def handle_call(
-        {
-          :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: "hue_outlet"} =
-            _device
-        },
-        _,
-        client
-      ) do
-    %{state: %{"on" => on}} =
-      login(host, username)
-      |> Client.get_light(pin)
-
-    {
-      :reply,
-      {:ok, %{"on" => on}},
-      client
-    }
-  end
-
-  def handle_call(
-        {
-          :get_value,
-          %{
-            host: host,
-            pin: pin,
-            config: %{username: username},
-            connection: "hue_daylight_sensor"
-          } = _device
-        },
-        _,
-        client
-      ) do
-    %{state: %{"daylight" => daylight}} =
-      login(host, username)
-      |> Client.get_sensor(pin)
-
-    {
-      :reply,
-      {:ok, %{"on" => daylight}},
-      client
-    }
-  end
-
-  def handle_call(
-        {
-          :get_value,
-          %{host: host, pin: pin, config: %{username: username}, connection: "hue_dimmer_switch"} =
-            _device
-        },
-        _,
-        client
-      ) do
-    %{
-      state: %{"buttonevent" => button_event},
-      config: %{"battery" => battery_level},
-      capabilities: %{"inputs" => inputs}
-    } =
-      login(host, username)
-      |> Client.get_sensor(pin)
-
-    {
-      :reply,
-      {
-        :ok,
-        %{"button_event" => button_event, "battery_level" => battery_level}
-        |> Map.merge(get_button_event_info(button_event, inputs))
-      },
-      client
-    }
-  end
-
-  def handle_call(
-        {
           :change,
           %{host: host, pin: pin, config: %{username: username}, connection: connection} =
             _device,
@@ -171,6 +78,89 @@ defmodule Hue.Driver do
       |> Client.update_light(pin, atomize_keys(parameters))
 
     {:reply, {:ok, result}, client}
+  end
+
+  defp get_device_value(interface, device_infos, state) when is_list(device_infos) do
+    Map.new(device_infos, fn %{id: id} = device_info ->
+      {id, get_device_value(interface, device_info, state)}
+    end)
+  end
+
+  defp get_device_value(
+         _interface,
+         %{
+           host: host,
+           pin: pin,
+           config: %{username: username},
+           connection: connection
+         } = _device_info,
+         _state
+       )
+       when connection in ["hue_dimmable_light", "hue_go"] do
+    %{state: %{"on" => on, "bri" => brightness}} =
+      login(host, username)
+      |> Client.get_light(pin)
+
+    {:ok, %{"on" => on, "brightness" => brightness}}
+  end
+
+  defp get_device_value(
+         _interface,
+         %{
+           host: host,
+           pin: pin,
+           config: %{username: username},
+           connection: "hue_outlet"
+         } = _device_info,
+         _state
+       ) do
+    %{state: %{"on" => on}} =
+      login(host, username)
+      |> Client.get_light(pin)
+
+    {:ok, %{"on" => on}}
+  end
+
+  defp get_device_value(
+         _interface,
+         %{
+           host: host,
+           pin: pin,
+           config: %{username: username},
+           connection: "hue_daylight_sensor"
+         } = _device_info,
+         _state
+       ) do
+    %{state: %{"daylight" => daylight}} =
+      login(host, username)
+      |> Client.get_sensor(pin)
+
+    {:ok, %{"on" => daylight}}
+  end
+
+  defp get_device_value(
+         _interface,
+         %{
+           host: host,
+           pin: pin,
+           config: %{username: username},
+           connection: "hue_dimmer_switch"
+         } = _device_info,
+         _state
+       ) do
+    %{
+      state: %{"buttonevent" => button_event},
+      config: %{"battery" => battery_level},
+      capabilities: %{"inputs" => inputs}
+    } =
+      login(host, username)
+      |> Client.get_sensor(pin)
+
+    {
+      :ok,
+      %{"button_event" => button_event, "battery_level" => battery_level}
+      |> Map.merge(get_button_event_info(button_event, inputs))
+    }
   end
 
   defp atomize_keys(%{} = map) do
