@@ -10,31 +10,16 @@ defmodule HomeApp.Application do
     Mix.Task.run("loadconfig")
 
     children = [
-      #      HomeAppWeb.Telemetry,
+      # HomeAppWeb.Telemetry,
       {Phoenix.PubSub, name: HomeApp.PubSub},
-      #      HomeAppWeb.Endpoint,
+      # HomeAppWeb.Endpoint,
       HomeApp.ConfigurationAgent,
       HomeApp.DeviceStateAgent,
       HomeApp.DeviceStateChangeMonitor,
-      #      HomeApp.DeviceMonitorSupervisor,
+      HomeApp.DeviceMonitorSupervisor,
       HomeApp.Clock,
       HomeApp.Automator,
-      HomeApp.DeviceHoldMonitor,
-      {
-        Smoov.Monitor,
-        {
-          HomeApp.PubSub,
-          60000,
-          ["NLALLEGO013429"]
-        }
-      },
-      {
-        HomeApp.MQTTMonitor,
-        {
-          HomeApp.PubSub,
-          %{host: "homeapp.home", port: 1883}
-        }
-      }
+      HomeApp.DeviceHoldMonitor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

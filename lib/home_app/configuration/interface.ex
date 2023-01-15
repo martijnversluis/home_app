@@ -15,6 +15,6 @@ defmodule HomeApp.Configuration.Interface do
     |> cast(attributes, [:id, :type, :host, :port, :polling_interval, :config],
       empty_values: ["", nil]
     )
-    |> validate_required([:id, :type, :host])
+    |> validate_required([:id, :type])
   end
 end

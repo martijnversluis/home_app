@@ -1,4 +1,6 @@
 defmodule HomeApp.DeviceControl do
+  alias HomeApp.{Configuration, ConfigurationAgent}
+
   def dispatch(devices, action, parameters \\ %{})
 
   def dispatch(devices, action, parameters) when is_list(devices) do
@@ -16,6 +18,14 @@ defmodule HomeApp.DeviceControl do
       "blink" -> driver.blink(device)
       "change" -> driver.change(device, parameters)
     end
+  end
+
+  def get_value(%{type: interface_type} = interface, devices) do
+    device_infos =
+      ConfigurationAgent.get_configuration()
+      |> Configuration.get_device_info(devices)
+
+    get_driver!(interface_type).get_value(interface, device_infos)
   end
 
   def get_value(%{interface_type: interface_type} = device) do
