@@ -10,9 +10,9 @@ defmodule HomeApp.Application do
     Mix.Task.run("loadconfig")
 
     children = [
-      # HomeAppWeb.Telemetry,
+      HomeAppWeb.Telemetry,
       {Phoenix.PubSub, name: HomeApp.PubSub},
-      # HomeAppWeb.Endpoint,
+      HomeAppWeb.Endpoint,
       HomeApp.ConfigurationAgent,
       HomeApp.DeviceStateAgent,
       HomeApp.DeviceStateChangeMonitor,

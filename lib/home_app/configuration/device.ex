@@ -9,11 +9,16 @@ defmodule HomeApp.Configuration.Device do
     field(:interface, :string)
     field(:pin, :integer)
     field(:monitor_hold, :boolean, default: true)
+    field(:config, HomeApp.Configuration.Config, default: %{})
   end
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :name, :type, :room, :interface, :pin], empty_values: ["", nil])
+    |> cast(
+         attributes,
+         [:id, :name, :type, :room, :interface, :pin, :monitor_hold, :config],
+         empty_values: ["", nil]
+       )
     |> validate_required([:id, :type, :room, :interface, :pin])
     |> HomeApp.Configuration.ensure_name()
   end

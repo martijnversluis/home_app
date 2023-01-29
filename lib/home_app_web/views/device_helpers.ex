@@ -1,3 +1,4 @@
+
 defmodule HomeAppWeb.DeviceHelpers do
   alias HomeApp.Configuration
   import Phoenix.HTML.Tag
@@ -54,8 +55,7 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp device_info(%{id: device_id} = device, %{} = configuration, value) do
     %{
-      device_type: %{icon: icon},
-      characteristics: characteristics
+      device_type: %{characteristics: characteristics, icon: icon}
     } = Configuration.get_device_info(configuration, device_id)
 
     %{

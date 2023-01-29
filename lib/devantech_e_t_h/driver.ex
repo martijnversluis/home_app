@@ -14,7 +14,14 @@ defmodule DevantechETH.Driver do
     do: GenServer.call(name(device_info), {:deactivate, interface, device_info})
 
   def handle_call(
-        {:activate, _interface, %{connection: "devantech_eth_relay", pin: pin} = _device},
+        {
+          :activate,
+          _interface,
+          %{
+            device_type: %{id: "devantech_eth_relay"},
+            pin: pin
+          } = _device
+        },
         _,
         client
       ) do
@@ -22,7 +29,14 @@ defmodule DevantechETH.Driver do
   end
 
   def handle_call(
-        {:deactivate, _interface, %{connection: "devantech_eth_relay", pin: pin} = _device},
+        {
+          :deactivate,
+          _interface,
+          %{
+            device_type: %{id: "devantech_eth_relay"},
+            pin: pin
+          } = _device
+        },
         _,
         client
       ) do
@@ -39,7 +53,9 @@ defmodule DevantechETH.Driver do
          _interface,
          %{
            pin: pin,
-           connection: "devantech_eth_analogue_input",
+           device_type: %{
+             id: "devantech_eth_analogue_input"
+           },
            config: %{
              voltage_range: %{min: min_voltage, max: max_voltage},
              value_range: %{min: min_value, max: max_value}
@@ -60,7 +76,10 @@ defmodule DevantechETH.Driver do
 
   defp get_device_value(
          _interface,
-         %{pin: pin, connection: "devantech_eth_relay"} = _device,
+         %{
+           pin: pin,
+           device_type: %{id: "devantech_eth_relay"},
+         } = _device,
          client
        ) do
     case Client.get_relay(client, pin) do
@@ -71,7 +90,10 @@ defmodule DevantechETH.Driver do
 
   defp get_device_value(
          _interface,
-         %{pin: pin, connection: "devantech_eth_digital_input"} = _device,
+         %{
+           pin: pin,
+           device_type: %{id: "devantech_eth_digital_input"}
+         } = _device,
          client
        ) do
     case Client.get_input(client, pin) do

@@ -1,17 +1,18 @@
 defmodule HomeApp.Configuration.DeviceType do
   use HomeApp.Configuration.Schema
+  alias HomeApp.Configuration.Characteristic
 
   schema "" do
     field(:id, :string)
     field(:connection, :string)
-    field(:characteristics, {:array, :string}, default: [])
+    embeds_many(:characteristics, Characteristic)
     field(:icon, :string)
-    field(:config, HomeApp.Configuration.Config, default: %{})
   end
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :connection, :characteristics, :icon, :config])
-    |> validate_required([:id, :connection, :characteristics, :icon])
+    |> cast(attributes, [:id, :connection, :icon])
+    |> cast_embed(:characteristics)
+    |> validate_required([:id, :characteristics, :icon])
   end
 end

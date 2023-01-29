@@ -17,12 +17,17 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :deactivate,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device
+          %{
+            host: host,
+            pin: pin,
+            config: %{username: username},
+            device_type: %{id: device_type_id}
+          } = _device
         },
         _,
         client
       )
-      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{on: false})
@@ -33,12 +38,17 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :activate,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device
+          %{
+            host: host,
+            pin: pin,
+            config: %{username: username},
+            device_type: %{id: device_type_id}
+          } = _device
         },
         _,
         client
       )
-      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{on: true})
@@ -49,12 +59,17 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :blink,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} = _device
+          %{
+            host: host,
+            pin: pin,
+            config: %{username: username},
+            device_type: %{id: device_type_id}
+          } = _device
         },
         _,
         client
       )
-      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, %{alert: "lselect"})
@@ -65,14 +80,19 @@ defmodule Hue.Driver do
   def handle_call(
         {
           :change,
-          %{host: host, pin: pin, config: %{username: username}, connection: connection} =
+          %{
+            host: host,
+            pin: pin,
+            config: %{username: username},
+            device_type: %{id: device_type_id}
+          } =
             _device,
           %{} = parameters
         },
         _,
         client
       )
-      when connection in ["hue_dimmable_light", "hue_go", "hue_outlet"] do
+      when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
       |> Client.update_light(pin, atomize_keys(parameters))
@@ -92,11 +112,11 @@ defmodule Hue.Driver do
            host: host,
            pin: pin,
            config: %{username: username},
-           connection: connection
+           device_type: %{id: device_type_id}
          } = _device_info,
          _state
        )
-       when connection in ["hue_dimmable_light", "hue_go"] do
+       when device_type_id in ["hue_light", "hue_go"] do
     %{state: %{"on" => on, "bri" => brightness}} =
       login(host, username)
       |> Client.get_light(pin)
@@ -110,7 +130,7 @@ defmodule Hue.Driver do
            host: host,
            pin: pin,
            config: %{username: username},
-           connection: "hue_outlet"
+           device_type: %{id: "hue_outlet"}
          } = _device_info,
          _state
        ) do
@@ -127,7 +147,7 @@ defmodule Hue.Driver do
            host: host,
            pin: pin,
            config: %{username: username},
-           connection: "hue_daylight_sensor"
+           device_type: %{id: "hue_daylight_sensor"}
          } = _device_info,
          _state
        ) do
@@ -144,7 +164,7 @@ defmodule Hue.Driver do
            host: host,
            pin: pin,
            config: %{username: username},
-           connection: "hue_dimmer_switch"
+           device_type: %{id: "hue_dimmer_switch"}
          } = _device_info,
          _state
        ) do
