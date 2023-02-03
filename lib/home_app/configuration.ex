@@ -112,7 +112,8 @@ defmodule HomeApp.Configuration do
           port: interface.port,
           pin: device.pin,
           config: Map.merge(device.config, interface.config),
-          device_type: device_type
+          device_type: device_type,
+          characteristic_ids: device_type.characteristics |> Enum.map(fn characteristic -> characteristic.id end)
         }
     end
   end

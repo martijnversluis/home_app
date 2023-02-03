@@ -29,7 +29,7 @@ defmodule HomeApp.Definition.Characteristic do
   def numeric(opts \\ []), do: new(Types.numeric(), opts)
 
   def new(type, opts \\ []) do
-    options = opts |> Keyword.merge(writable: false)
+    options = [writable: false] |> Keyword.merge(opts)
 
     %__MODULE__{
       type: type,

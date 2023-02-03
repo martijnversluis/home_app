@@ -67,7 +67,7 @@ defmodule DevantechETH.Driver do
       {:ok, voltage} ->
         ratio = voltage / (max_voltage - min_voltage)
         value = min_value + (max_value - min_value) * ratio
-        {:ok, %{"voltage" => value}}
+        {:ok, %{"value" => value}}
 
       {:error, error} ->
         {:error, error}

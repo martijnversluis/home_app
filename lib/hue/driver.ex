@@ -121,7 +121,7 @@ defmodule Hue.Driver do
       login(host, username)
       |> Client.get_light(pin)
 
-    {:ok, %{"on" => on, "brightness" => brightness}}
+    {:ok, %{"on" => on, "brightness" => Float.ceil(brightness / 2.54)}}
   end
 
   defp get_device_value(
@@ -203,7 +203,7 @@ defmodule Hue.Driver do
           event["buttonevent"],
           %{
             "button" => button_index,
-            "event_type" => event["eventtype"],
+            "event" => event["eventtype"],
             "description" =>
               "Button #{button_index} #{event["eventtype"] |> String.replace("_", " ")}"
           }
