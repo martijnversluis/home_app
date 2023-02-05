@@ -1,4 +1,3 @@
-
 defmodule HomeAppWeb.DeviceHelpers do
   alias HomeApp.Configuration
   import Phoenix.HTML.Tag
@@ -25,7 +24,7 @@ defmodule HomeAppWeb.DeviceHelpers do
       "phx-hook": "NumericSlider",
       "phx-click": ""
     )
-      end
+  end
 
   def device_control(
         %{id: device_id, value: value} = _device,
@@ -121,7 +120,8 @@ defmodule HomeAppWeb.DeviceHelpers do
       |> Enum.reduce([], fn device, acc -> acc ++ device.device_type.characteristics end)
       |> Enum.uniq()
 
-    all_characteristic_ids = all_characteristics |> Enum.map(fn characteristic -> characteristic.id end)
+    all_characteristic_ids =
+      all_characteristics |> Enum.map(fn characteristic -> characteristic.id end)
 
     common_characteristic_ids =
       all_characteristic_ids
@@ -133,7 +133,9 @@ defmodule HomeAppWeb.DeviceHelpers do
 
     common_characteristics =
       all_characteristics
-      |> Enum.filter(fn characteristic -> Enum.member?(common_characteristic_ids, characteristic.id) end)
+      |> Enum.filter(fn characteristic ->
+        Enum.member?(common_characteristic_ids, characteristic.id)
+      end)
 
     grouped_values = group_values(common_characteristics, values)
 
@@ -168,11 +170,15 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp get_group_value(%{type: "boolean"} = _characteristic, values), do: Enum.all?(values)
 
   defp get_group_value(%{type: "numeric"} = _characteristic, values) do
-    Enum.sum(values) / Enum.count(values)
+    number_values = Enum.filter(values, fn value -> is_number(value) end)
+    Enum.sum(number_values) / Enum.count(number_values)
   end
 
   defp get_group_value(%{type: "percentage"} = _characteristic, values) do
-    Enum.sum(values) / Enum.count(values)
+    case Enum.filter(values, fn value -> is_number(value) end) do
+      [] -> 0
+      number_values -> Enum.sum(number_values) / Enum.count(number_values)
+    end
   end
 
   defp group_values(characteristics, values) do
@@ -232,9 +238,9 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp label(
-  %{} = _device,
-%{type: "percentage"} = _characteristic,
-value
+         %{} = _device,
+         %{type: "percentage"} = _characteristic,
+         value
        ) do
     "#{value}%"
   end
@@ -305,7 +311,7 @@ value
     value / (max - min)
   end
 
-  defp numeric_to_scale(%{type: "percentage", } = _characteristic, value) do
+  defp numeric_to_scale(%{type: "percentage"} = _characteristic, value) do
     value / 100.0
   end
 

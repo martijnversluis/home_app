@@ -3,8 +3,6 @@ defmodule HomeApp.Configuration.Characteristic do
   alias HomeApp.Definition.Characteristic.Types
   use HomeApp.Configuration.Schema
 
-  @types ~w[boolean enum float location percentage string ]
-
   schema "" do
     field(:id, :string)
     field(:name, :string)
@@ -13,6 +11,7 @@ defmodule HomeApp.Configuration.Characteristic do
     field(:writable, :boolean, default: false)
     field(:type, :string)
     field(:decimals, :integer, default: nil)
+    field(:enum_values, {:array, :string}, default: [])
     embeds_one(:range, NumericRange)
     embeds_one(:values, BinaryValues)
     embeds_one(:states, BinaryStates)

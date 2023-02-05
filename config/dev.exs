@@ -20,6 +20,7 @@ config :home_app, HomeAppWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
+  reloadable_compilers: [:gettext, :phoenix, :elixir, :phoenix_sass],
   watchers: [
     node: [
       "node_modules/webpack/bin/webpack.js",
@@ -61,7 +62,8 @@ config :home_app, HomeAppWeb.Endpoint,
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/home_app_web/(live|views)/.*(ex)$",
-      ~r"lib/home_app_web/templates/.*(eex)$"
+      ~r"lib/home_app_web/templates/.*(eex)$",
+      ~r"priv/sass/.*(sass|scss)$"
     ]
   ]
 

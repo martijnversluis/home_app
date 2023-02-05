@@ -12,7 +12,7 @@ defmodule HomeApp.Configuration.DeviceType do
   def changeset(struct, attributes) do
     struct
     |> cast(attributes, [:id, :connection, :icon])
-    |> cast_embed(:characteristics)
-    |> validate_required([:id, :characteristics, :icon])
+    |> cast_embed(:characteristics, required: true)
+    |> validate_required([:id, :icon])
   end
 end

@@ -16,6 +16,14 @@ config :home_app, HomeAppWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :your_app, :phoenix_sass,
+  # this is the default
+  pattern: "sass/**/*.s[ac]ss",
+  # this is the default
+  output_dir: "static/css",
+  # this is the default (compressed)
+  output_style: 3
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

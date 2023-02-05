@@ -78,7 +78,7 @@ defmodule DevantechETH.Driver do
          _interface,
          %{
            pin: pin,
-           device_type: %{id: "devantech_eth_relay"},
+           device_type: %{id: "devantech_eth_relay"}
          } = _device,
          client
        ) do

@@ -1,6 +1,5 @@
 defmodule Smoov.Client do
-  use GenServer
-  alias Smoov.{ChargePoint, Connector}
+  alias Smoov.ChargePoint
 
   @api_root "https://www.smoovapp.eu/api"
 

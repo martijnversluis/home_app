@@ -7,7 +7,7 @@ defmodule HomeApp.Configuration.Interface do
     field(:host, :string)
     field(:port, :integer, default: nil)
     field(:polling_interval, :integer, default: 1000)
-    field(:config, HomeApp.Configuration.Config, default: %{})
+    field(:config, HomeApp.Configuration.Config)
   end
 
   def changeset(struct, attributes) do

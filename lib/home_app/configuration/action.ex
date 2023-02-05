@@ -4,7 +4,7 @@ defmodule HomeApp.Configuration.Action do
   schema "" do
     field(:action, :string)
     field(:target, :string)
-    field(:config, HomeApp.Configuration.Config, default: %{})
+    field(:config, HomeApp.Configuration.Config)
   end
 
   def changeset(struct, attributes) do

@@ -85,8 +85,7 @@ defmodule Hue.Driver do
             pin: pin,
             config: %{username: username},
             device_type: %{id: device_type_id}
-          } =
-            _device,
+          } = _device,
           %{} = parameters
         },
         _,

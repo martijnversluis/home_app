@@ -19,7 +19,7 @@ defmodule Smoov.ChargePoint do
             "longitude" => longitude
           },
           "evses" => connector_data
-        } = data
+        } = _data
       ) do
     connectors = Connector.parse(connector_data)
 

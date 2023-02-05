@@ -1,6 +1,7 @@
 defmodule HomeApp.DeviceDriver do
   defmacro __using__(opts) do
     quote location: :keep, bind_quoted: [opts: opts] do
+      alias HomeApp.Configuration.{Interface, DeviceType, Device}
       use GenServer
 
       def monitor_module(), do: unquote(Keyword.get(opts, :monitor_with))

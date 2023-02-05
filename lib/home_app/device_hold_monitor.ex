@@ -41,7 +41,7 @@ defmodule HomeApp.DeviceHoldMonitor do
       nil ->
         {:noreply, state}
 
-      {timer_id, hold_count} ->
+      {timer_id, _hold_count} ->
         {:ok, :cancel} = :timer.cancel(timer_id)
         {:noreply, Map.delete(state, device_id)}
     end

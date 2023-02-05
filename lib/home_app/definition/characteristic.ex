@@ -1,5 +1,5 @@
 defmodule HomeApp.Definition.Characteristic do
-  defstruct type: nil, writable: false, range: nil
+  defstruct type: nil, writable: false, range: nil, enum_values: nil
 
   defmodule Types do
     @boolean "boolean"
@@ -17,7 +17,7 @@ defmodule HomeApp.Definition.Characteristic do
     def string, do: @string
 
     def all() do
-      [boolean, enum, location, numeric, percentage, string]
+      [boolean(), enum(), location(), numeric(), percentage(), string()]
     end
   end
 
@@ -25,16 +25,19 @@ defmodule HomeApp.Definition.Characteristic do
   def string(opts \\ []), do: new(Types.string(), opts)
   def percentage(opts \\ []), do: new(Types.percentage(), opts)
   def boolean(opts \\ []), do: new(Types.boolean(), opts)
-  def enum(values, opts \\ []), do: new(Types.enum(), opts)
+  def enum(values, opts \\ []), do: new(Types.enum(), opts |> Keyword.put(:enum_values, values))
   def numeric(opts \\ []), do: new(Types.numeric(), opts)
 
   def new(type, opts \\ []) do
-    options = [writable: false] |> Keyword.merge(opts)
+    options =
+      [writable: false, enum_values: nil]
+      |> Keyword.merge(opts)
 
     %__MODULE__{
       type: type,
       writable: options[:writable],
-      range: options |> Keyword.get(:range) |> format_range()
+      range: options |> Keyword.get(:range) |> format_range(),
+      enum_values: options[:enum_values]
     }
   end
 

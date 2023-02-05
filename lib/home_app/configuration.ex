@@ -47,7 +47,6 @@ defmodule HomeApp.Configuration do
         |> merge_driver_info()
         |> strip_structs()
         |> parse!()
-        |> strip_structs()
 
       {:error, error} ->
         {:error, "Could not read config file: #{error}"}
@@ -90,7 +89,7 @@ defmodule HomeApp.Configuration do
     Enum.map(device_ids, fn device_id -> get_device_info(configuration, device_id) end)
   end
 
-  def get_device_info(configuration, %{id: device_id} = device),
+  def get_device_info(configuration, %{id: device_id} = _device),
     do: get_device_info(configuration, device_id)
 
   def get_device_info(configuration, device_id) do
@@ -113,7 +112,8 @@ defmodule HomeApp.Configuration do
           pin: device.pin,
           config: Map.merge(device.config, interface.config),
           device_type: device_type,
-          characteristic_ids: device_type.characteristics |> Enum.map(fn characteristic -> characteristic.id end)
+          characteristic_ids:
+            device_type.characteristics |> Enum.map(fn characteristic -> characteristic.id end)
         }
     end
   end
@@ -139,13 +139,24 @@ defmodule HomeApp.Configuration do
   def get_characteristic(configuration, characteristic_id),
     do: find(configuration, :characteristics, characteristic_id)
 
-  def get_device(configuration, device_id), do: find(configuration, :devices, device_id)
+  def get_device(configuration, device_id) do
+    find(configuration, :devices, device_id)
+    |> Map.update(:config, %{}, fn
+      %{} = config -> config
+      _ -> %{}
+    end)
+  end
 
   def get_device_type(configuration, device_type),
     do: find(configuration, :device_types, device_type)
 
-  def get_interface(configuration, interface_id),
-    do: find(configuration, :interfaces, interface_id)
+  def get_interface(configuration, interface_id) do
+    find(configuration, :interfaces, interface_id)
+    |> Map.update(:config, %{}, fn
+      %{} = config -> config
+      _ -> %{}
+    end)
+  end
 
   def get_room(configuration, room_id), do: find(configuration, :rooms, room_id)
   def get_group(configuration, group_id), do: find(configuration, :groups, group_id)
@@ -155,20 +166,20 @@ defmodule HomeApp.Configuration do
   end
 
   defp merge_driver_info(configuration) do
-    Map.merge(configuration, driver_info)
+    Map.merge(configuration, driver_info())
   end
 
   defp driver_info() do
     Application.get_env(:home_app, :device_drivers, [])
     |> Enum.reduce(
       %{device_types: []},
-      fn {driver_name, driver}, %{device_types: device_types} = acc ->
+      fn {driver_name, driver}, %{device_types: device_types} = _acc ->
         [namespace, "Driver"] = Module.split(driver)
         definition = Module.concat([namespace, Definition])
 
         driver_device_types =
           definition.device_types()
-          |> Enum.map(fn {id, %{characteristics: characteristics} = device_type} ->
+          |> Enum.map(fn {id, %{} = device_type} ->
             device_type
             |> Map.put(:id, "#{driver_name}_#{id}")
             |> characteristics_map_to_list()

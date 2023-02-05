@@ -7,7 +7,7 @@ defmodule HomeApp.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers() ++ [:phoenix_sass],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -51,7 +51,8 @@ defmodule HomeApp.MixProject do
       {:timex, "~> 3.7.5"},
       {:httpoison, "~> 1.8"},
       {:dotenv, "~> 3.0.0"},
-      {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]}
+      {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]},
+      {:phoenix_sass, "~> 0.1.8"}
     ]
   end
 

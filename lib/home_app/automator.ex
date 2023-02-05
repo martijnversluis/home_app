@@ -60,7 +60,7 @@ defmodule HomeApp.Automator do
   defp should_trigger_automation?(
          %{
            characteristic: characteristic_id,
-           event: _event,
+           event: _automation_event,
            subject: subject
          } = automation,
          %{

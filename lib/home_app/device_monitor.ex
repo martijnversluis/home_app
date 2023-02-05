@@ -27,10 +27,8 @@ defmodule HomeApp.DeviceMonitor do
     GenServer.call(pid, :update)
   end
 
-  def handle_info(:update, {driver, %{type: interface_type} = interface, devices} = state) do
-    for {device_id, response} <-
-          DeviceControl.get_value(interface, devices)
-          |> IO.inspect(label: "device state for #{interface_type}") do
+  def handle_info(:update, {_driver, interface, devices} = state) do
+    for {device_id, response} <- DeviceControl.get_value(interface, devices) do
       case response do
         {:ok, value} ->
           Event.broadcast(
@@ -39,7 +37,7 @@ defmodule HomeApp.DeviceMonitor do
           )
 
         {:error, description} ->
-          IO.puts("Error getting value for #{device_id}")
+          IO.puts("Error getting value for #{device_id}: #{description}")
       end
     end
 
