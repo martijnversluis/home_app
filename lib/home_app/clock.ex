@@ -24,8 +24,4 @@ defmodule HomeApp.Clock do
     schedule_next_tick()
     {:noreply, state}
   end
-
-  defp current_time() do
-    Timex.Timezone.convert(Timex.now(), Timex.Timezone.local())
-  end
 end

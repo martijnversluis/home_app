@@ -1,5 +1,6 @@
 defmodule HomeApp.Configuration.Characteristic do
   alias HomeApp.Configuration.Characteristic.{BinaryStates, BinaryValues, NumericRange}
+  alias HomeApp.Definition.Characteristic.Types
   use HomeApp.Configuration.Schema
 
   schema "" do
@@ -10,6 +11,7 @@ defmodule HomeApp.Configuration.Characteristic do
     field(:writable, :boolean, default: false)
     field(:type, :string)
     field(:decimals, :integer, default: nil)
+    field(:enum_values, {:array, :string}, default: [])
     embeds_one(:range, NumericRange)
     embeds_one(:values, BinaryValues)
     embeds_one(:states, BinaryStates)
@@ -25,8 +27,8 @@ defmodule HomeApp.Configuration.Characteristic do
     |> cast_embed(:states)
     |> validate_required([:id])
     |> HomeApp.Configuration.ensure_name()
-    |> validate_inclusion(:type, ["binary", "numeric", "timestamp", "string"])
-    |> validate_on(:type, "numeric", fn changeset ->
+    |> validate_inclusion(:type, Types.all())
+    |> validate_on(:type, Types.numeric(), fn changeset ->
       validate_required(changeset, :range)
     end)
     |> set_default_binary_attribute(:values, %{on: "on", off: "off"})

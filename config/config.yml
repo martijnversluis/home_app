@@ -18,70 +18,6 @@ rooms:
   - id: kitchen
     icon: "restaurant"
 
-characteristics:
-  - id: temperature
-    source: voltage
-    type: numeric
-    range:
-      min: 0
-      max: 40
-    decimals: 0
-    unit: "℃"
-    writable: false
-  - id: on
-    name: "status"
-    type: binary
-    writable: true
-  - id: binary_input
-    name: "status"
-    source: on
-    type: binary
-    writable: false
-  - id: activity
-    source: on
-    type: binary
-    writable: false
-  - id: analog_activity
-    source: voltage
-    type: binary
-    writable: false
-  - id: open_closed
-    source: on
-    name: "status"
-    type: binary
-    values:
-      off: closed
-      on: open
-    states:
-      on: danger
-  - id: brightness
-    type: numeric
-    range:
-      min: 0
-      max: 254
-    unit: "%"
-    writable: true
-  - id: hue_sensor_battery_level
-    source: battery_level
-    type: numeric
-    range:
-      min: 0
-      max: 100
-    unit: "%"
-    writable: false
-  - id: hue_dimmer_button
-    source: button
-    type: string
-    writable: false
-  - id: hue_dimmer_button_event
-    source: button_event
-    type: string
-    writable: false
-  - id: hue_dimmer_button_event_description
-    source: description
-    type: string
-    writable: false
-
 interfaces:
   - id: meter_cabinet_eth
     type: devantech_eth
@@ -107,82 +43,6 @@ interfaces:
       charge_points:
         - NLALLEGO013429
 
-device_types:
-  - id: mqtt_io_digital_input
-    connection: mqtt_io_digital_input
-    characteristics: [binary_input]
-    icon: "webcam"
-  - id: eth_temperature
-    connection: devantech_eth_analogue_input
-    config:
-      voltage_range:
-        min: 0
-        max: 1.75
-      value_range:
-        min: -50
-        max: 125
-    characteristics: [temperature]
-    icon: "temperature-half"
-  - id: eth_light
-    connection: devantech_eth_relay
-    characteristics: [on]
-    icon: "lightbulb"
-  - id: eth_outlet
-    connection: devantech_eth_relay
-    characteristics: [on]
-    icon: "plug"
-  - id: eth_motion_sensor
-    connection: devantech_eth_analogue_input
-    characteristics: [analog_activity]
-    icon: "webcam"
-    config:
-      voltage_range:
-        min: 0
-        max: 3.3
-      value_range:
-        min: 0
-        max: 1
-  - id: eth_window
-    connection: devantech_eth_digital_input
-    characteristics: [open_closed]
-    icon: "lock-open-alt"
-  - id: eth_digital_input
-    connection: devantech_eth_digital_input
-    characteristics: [binary_input]
-    icon: "eye"
-  - id: eth_switch
-    connection: devantech_eth_relay
-    characteristics: [on]
-    icon: power
-  - id: eth_doorbell
-    connection: devantech_eth_digital_input
-    characteristics: [activity]
-    icon: "bell"
-  - id: hue_go
-    connection: hue_go
-    characteristics: [on, brightness]
-    icon: "lightbulb"
-  - id: hue_dimmable_light
-    connection: hue_dimmable_light
-    characteristics: [on, brightness]
-    icon: "lightbulb"
-  - id: hue_outlet
-    connection: hue_outlet
-    characteristics: [on]
-    icon: "plug"
-  - id: hue_daylight_sensor
-    connection: hue_daylight_sensor
-    characteristics: [binary_input]
-    icon: "sun"
-  - id: hue_dimmer_switch
-    connection: hue_dimmer_switch
-    characteristics:
-    - hue_dimmer_button_event_description
-    - hue_dimmer_button_event
-    - hue_dimmer_button
-    - hue_sensor_battery_level
-    icon: "sliders-v-alt"
-
 devices:
   - id: mqtt_io_test_port
     type: mqtt_io_digital_input
@@ -191,43 +51,57 @@ devices:
     pin: 21
     monitor_hold: true
   - id: meter_cabinet_temperature
-    type: eth_temperature
+    type: devantech_eth_analogue_input
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 1
+    config:
+      voltage_range:
+        min: 0
+        max: 1.75
+      value_range:
+        min: -50
+        max: 125
   - id: meter_cabinet_relay_1
-    type: eth_outlet
+    type: devantech_eth_relay
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 1
   - id: meter_cabinet_motion_sensor
-    type: eth_motion_sensor
+    type: devantech_eth_analogue_input
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 2
+    config:
+      voltage_range:
+        min: 0
+        max: 3.3
+      value_range:
+        min: 0
+        max: 1
   - id: meter_cabinet_input_1
-    type: eth_digital_input
+    type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 1
     monitor_hold: true
   - id: meter_cabinet_input_3
-    type: eth_digital_input
+    type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 3
   - id: meter_cabinet_input_4
-    type: eth_digital_input
+    type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
     pin: 4
   - id: doorbell_switch
-    type: eth_switch
+    type: devantech_eth_relay
     room: none
     interface: meter_cabinet_eth
     pin: 32
   - id: doorbell
-    type: eth_doorbell
+    type: devantech_eth_relay
     room: none
     interface: meter_cabinet_eth
     pin: 2
@@ -237,52 +111,52 @@ devices:
     interface: hue_bridge
     pin: 9
   - id: living_room_light
-    type: hue_dimmable_light
+    type: hue_light
     room: living_room
     interface: hue_bridge
     pin: 2
   - id: corridor_light
-    type: hue_dimmable_light
+    type: hue_light
     room: corridor
     interface: hue_bridge
     pin: 7
   - id: bathroom_light
-    type: hue_dimmable_light
+    type: hue_light
     room: bathroom
     interface: hue_bridge
     pin: 8
   - id: kitchen_table_light_1
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 19
   - id: kitchen_table_light_2
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 20
   - id: kitchen_table_light_3
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 21
   - id: kitchen_table_light_4
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 22
   - id: kitchen_table_light_5
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 23
   - id: kitchen_table_light_6
-    type: hue_dimmable_light
+    type: hue_light
     room: kitchen
     interface: hue_bridge
     pin: 24
   - id: hallway_light
-    type: hue_dimmable_light
+    type: hue_light
     room: hallway
     interface: hue_bridge
     pin: 16

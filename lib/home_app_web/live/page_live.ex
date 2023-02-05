@@ -1,6 +1,5 @@
 defmodule HomeAppWeb.PageLive do
-  alias HomeApp.Configuration
-  alias HomeApp.DeviceControl
+  alias HomeApp.{Configuration, DeviceControl, Event}
   use HomeAppWeb, :live_view
 
   @impl true
@@ -21,7 +20,14 @@ defmodule HomeAppWeb.PageLive do
   end
 
   @impl true
-  def handle_info({"device:state_changed", device_id, {_previous_state, new_state}}, socket) do
+  def handle_info(
+        %Event{
+          type: "device:state_changed",
+          subject: device_id,
+          data: {_previous_state, new_state}
+        },
+        socket
+      ) do
     {:noreply, assign(socket, :values, Map.put(socket.assigns.values, device_id, new_state))}
   end
 

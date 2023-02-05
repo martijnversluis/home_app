@@ -1,7 +1,6 @@
 defmodule HomeApp.Configuration do
   alias HomeApp.Configuration.{
     Automation,
-    Characteristic,
     Device,
     DeviceType,
     Group,
@@ -15,7 +14,6 @@ defmodule HomeApp.Configuration do
 
   schema "configuration" do
     embeds_many(:rooms, Room)
-    embeds_many(:characteristics, Characteristic)
     embeds_many(:interfaces, Interface)
     embeds_many(:device_types, DeviceType)
     embeds_many(:devices, Device)
@@ -28,14 +26,12 @@ defmodule HomeApp.Configuration do
     struct
     |> cast(attributes, [])
     |> cast_embed(:rooms)
-    |> cast_embed(:characteristics)
     |> cast_embed(:interfaces)
     |> cast_embed(:device_types)
     |> cast_embed(:devices)
     |> cast_embed(:notifiers)
     |> cast_embed(:automations)
     |> cast_embed(:groups)
-    |> validate_ids(:device_types, :characteristics, :characteristics)
     |> validate_ids(:devices, :type, :device_types)
     |> validate_ids(:devices, :room, :rooms)
     |> validate_ids(:devices, :interface, :interfaces)
@@ -47,8 +43,10 @@ defmodule HomeApp.Configuration do
       {:ok, yaml} ->
         yaml
         |> YAML.Parser.parse!()
-        |> parse!()
+        |> keys_to_atoms()
+        |> merge_driver_info()
         |> strip_structs()
+        |> parse!()
 
       {:error, error} ->
         {:error, "Could not read config file: #{error}"}
@@ -91,7 +89,7 @@ defmodule HomeApp.Configuration do
     Enum.map(device_ids, fn device_id -> get_device_info(configuration, device_id) end)
   end
 
-  def get_device_info(configuration, %{id: device_id} = device),
+  def get_device_info(configuration, %{id: device_id} = _device),
     do: get_device_info(configuration, device_id)
 
   def get_device_info(configuration, device_id) do
@@ -112,11 +110,10 @@ defmodule HomeApp.Configuration do
           host: interface.host,
           port: interface.port,
           pin: device.pin,
-          connection: device_type.connection,
-          config: Map.merge(device_type.config, interface.config),
+          config: Map.merge(device.config, interface.config),
           device_type: device_type,
-          characteristic_ids: device_type.characteristics,
-          characteristics: get_characteristics(configuration, device_type.characteristics)
+          characteristic_ids:
+            device_type.characteristics |> Enum.map(fn characteristic -> characteristic.id end)
         }
     end
   end
@@ -142,16 +139,67 @@ defmodule HomeApp.Configuration do
   def get_characteristic(configuration, characteristic_id),
     do: find(configuration, :characteristics, characteristic_id)
 
-  def get_device(configuration, device_id), do: find(configuration, :devices, device_id)
+  def get_device(configuration, device_id) do
+    find(configuration, :devices, device_id)
+    |> Map.update(:config, %{}, fn
+      %{} = config -> config
+      _ -> %{}
+    end)
+  end
 
   def get_device_type(configuration, device_type),
     do: find(configuration, :device_types, device_type)
 
-  def get_interface(configuration, interface_id),
-    do: find(configuration, :interfaces, interface_id)
+  def get_interface(configuration, interface_id) do
+    find(configuration, :interfaces, interface_id)
+    |> Map.update(:config, %{}, fn
+      %{} = config -> config
+      _ -> %{}
+    end)
+  end
 
   def get_room(configuration, room_id), do: find(configuration, :rooms, room_id)
   def get_group(configuration, group_id), do: find(configuration, :groups, group_id)
+
+  defp keys_to_atoms(%{} = map) do
+    Map.new(map, fn {key, value} -> {String.to_existing_atom(key), value} end)
+  end
+
+  defp merge_driver_info(configuration) do
+    Map.merge(configuration, driver_info())
+  end
+
+  defp driver_info() do
+    Application.get_env(:home_app, :device_drivers, [])
+    |> Enum.reduce(
+      %{device_types: []},
+      fn {driver_name, driver}, %{device_types: device_types} = _acc ->
+        [namespace, "Driver"] = Module.split(driver)
+        definition = Module.concat([namespace, Definition])
+
+        driver_device_types =
+          definition.device_types()
+          |> Enum.map(fn {id, %{} = device_type} ->
+            device_type
+            |> Map.put(:id, "#{driver_name}_#{id}")
+            |> characteristics_map_to_list()
+            |> IO.inspect(label: "device_type")
+          end)
+
+        %{device_types: device_types ++ driver_device_types}
+      end
+    )
+  end
+
+  defp characteristics_map_to_list(%{characteristics: %{} = characteristics} = device_type) do
+    Map.put(
+      device_type,
+      :characteristics,
+      Enum.map(characteristics, fn {id, characteristic} ->
+        Map.put(characteristic, :id, "#{id}")
+      end)
+    )
+  end
 
   defp find(configuration, collection, id) do
     configuration

@@ -28,13 +28,17 @@ defmodule HomeApp.DeviceControl do
     get_driver!(interface_type).get_value(interface, device_infos)
   end
 
-  def get_value(%{interface_type: interface_type} = device) do
-    get_value(get_driver!(interface_type), device)
+  def get_value(%{interface_type: interface_type, interface: interface} = device) do
+    interface =
+      ConfigurationAgent.get_configuration()
+      |> Configuration.get_interface(interface)
+
+    get_driver!(interface_type) |> get_value(interface, device)
   end
 
-  def get_value(driver, device) do
+  def get_value(driver, interface, device) do
     try do
-      driver.get_value(device)
+      driver.get_value(interface, device)
     catch
       :exit, _value -> {:error, :no_connection}
     end

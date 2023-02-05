@@ -4,7 +4,7 @@ defmodule HomeApp.Configuration.Notifier do
   schema "" do
     field(:id, :string)
     field(:interface, :string)
-    field(:config, HomeApp.Configuration.Config, default: %{})
+    field(:config, HomeApp.Configuration.Config)
   end
 
   def changeset(struct, attributes) do

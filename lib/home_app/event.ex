@@ -14,7 +14,6 @@ defmodule HomeApp.Event do
   end
 
   def broadcast(pub_sub_module, %__MODULE__{type: event_type} = event) do
-    IO.inspect(event, label: "Broadcast event")
     Phoenix.PubSub.broadcast(pub_sub_module, event_type, event)
   end
 

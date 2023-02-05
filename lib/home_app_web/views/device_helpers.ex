@@ -6,6 +6,30 @@ defmodule HomeAppWeb.DeviceHelpers do
         %{id: device_id, value: value} = _device,
         %{
           id: characteristic_id,
+          type: "percentage",
+          writable: true
+        } = characteristic
+      ) do
+    tag(
+      :input,
+      class: "device__slider",
+      id: "#{device_id}_#{characteristic_id}",
+      max: 100,
+      min: 0,
+      name: "#{device_id}_#{characteristic_id}",
+      type: "range",
+      value: get_value(value, characteristic),
+      "phx-value-device-id": device_id,
+      "phx-value-characteristic": characteristic_id,
+      "phx-hook": "NumericSlider",
+      "phx-click": ""
+    )
+  end
+
+  def device_control(
+        %{id: device_id, value: value} = _device,
+        %{
+          id: characteristic_id,
           type: "numeric",
           writable: true,
           range: %{min: min, max: max}
@@ -54,8 +78,7 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp device_info(%{id: device_id} = device, %{} = configuration, value) do
     %{
-      device_type: %{icon: icon},
-      characteristics: characteristics
+      device_type: %{characteristics: characteristics, icon: icon}
     } = Configuration.get_device_info(configuration, device_id)
 
     %{
@@ -92,10 +115,13 @@ defmodule HomeAppWeb.DeviceHelpers do
        ) do
     group_devices = Configuration.get_device_info(configuration, group_device_ids)
 
-    all_characteristic_ids =
+    all_characteristics =
       group_devices
-      |> Enum.reduce([], fn device, acc -> acc ++ device.characteristic_ids end)
+      |> Enum.reduce([], fn device, acc -> acc ++ device.device_type.characteristics end)
       |> Enum.uniq()
+
+    all_characteristic_ids =
+      all_characteristics |> Enum.map(fn characteristic -> characteristic.id end)
 
     common_characteristic_ids =
       all_characteristic_ids
@@ -106,7 +132,10 @@ defmodule HomeAppWeb.DeviceHelpers do
       end)
 
     common_characteristics =
-      Configuration.get_characteristics(configuration, common_characteristic_ids)
+      all_characteristics
+      |> Enum.filter(fn characteristic ->
+        Enum.member?(common_characteristic_ids, characteristic.id)
+      end)
 
     grouped_values = group_values(common_characteristics, values)
 
@@ -138,10 +167,18 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp button_icon(%{type: "binary", writable: true}, false = _value), do: "toggle-off"
   defp button_icon(%{} = _characteristic, _value), do: nil
 
-  defp get_group_value(%{type: "binary"} = _characteristic, values), do: Enum.all?(values)
+  defp get_group_value(%{type: "boolean"} = _characteristic, values), do: Enum.all?(values)
 
   defp get_group_value(%{type: "numeric"} = _characteristic, values) do
-    Enum.sum(values) / Enum.count(values)
+    number_values = Enum.filter(values, fn value -> is_number(value) end)
+    Enum.sum(number_values) / Enum.count(number_values)
+  end
+
+  defp get_group_value(%{type: "percentage"} = _characteristic, values) do
+    case Enum.filter(values, fn value -> is_number(value) end) do
+      [] -> 0
+      number_values -> Enum.sum(number_values) / Enum.count(number_values)
+    end
   end
 
   defp group_values(characteristics, values) do
@@ -158,16 +195,26 @@ defmodule HomeAppWeb.DeviceHelpers do
     |> Map.new()
   end
 
+  defp sort_characteristics(characteristics) do
+    characteristics
+    |> Enum.sort(fn
+      %{type: "boolean"}, _ -> true
+      _, _ -> false
+    end)
+  end
+
   defp click_action(_characteristics, nil = _value), do: nil
 
   defp click_action(characteristics, value) when is_list(characteristics) do
-    Enum.find_value(characteristics, fn characteristic ->
+    characteristics
+    |> sort_characteristics()
+    |> Enum.find_value(fn characteristic ->
       click_action(characteristic, get_value(value, characteristic))
     end)
   end
 
-  defp click_action(%{type: "binary", writable: true}, true = _value), do: "deactivate"
-  defp click_action(%{type: "binary", writable: true}, false = _value), do: "activate"
+  defp click_action(%{type: "boolean", writable: true}, true = _value), do: "deactivate"
+  defp click_action(%{type: "boolean", writable: true}, false = _value), do: "activate"
   defp click_action(%{writable: false}, _value), do: nil
 
   defp label(device, characteristics, value) when is_list(characteristics) do
@@ -175,11 +222,12 @@ defmodule HomeAppWeb.DeviceHelpers do
     label(device, characteristic, get_value(value, characteristic))
   end
 
-  defp label(%{name: device_name} = _device, %{type: "binary"} = _characteristic, _value),
+  defp label(%{name: device_name} = _device, %{type: "boolean"} = _characteristic, _value),
     do: device_name
 
   defp label(%{} = _device, %{type: "numeric"} = _characteristic, nil = _value), do: "-"
   defp label(%{} = _device, %{type: "string"} = _characteristic, value), do: value
+  defp label(%{} = _device, %{type: "enum"} = _characteristic, value), do: value
 
   defp label(
          %{} = _device,
@@ -187,6 +235,14 @@ defmodule HomeAppWeb.DeviceHelpers do
          value
        ) do
     "#{round_numeric_value(value, decimals)} #{unit}"
+  end
+
+  defp label(
+         %{} = _device,
+         %{type: "percentage"} = _characteristic,
+         value
+       ) do
+    "#{value}%"
   end
 
   defp label(%{} = _device, %{type: "timestamp"} = _characteristic, value) do
@@ -201,20 +257,28 @@ defmodule HomeAppWeb.DeviceHelpers do
     do: Float.ceil(value, decimals)
 
   defp state(characteristics, value) when is_list(characteristics) do
-    characteristic = List.first(characteristics)
+    characteristic = characteristics |> sort_characteristics() |> List.first()
     state(characteristic, get_value(value, characteristic))
   end
 
   defp state(%{} = _characteristic, nil = _value), do: "unknown"
 
-  defp state(%{type: "binary", states: %{on: on_state, off: off_state}} = _characteristic, value) do
+  defp state(%{type: "boolean"} = _characteristic, value) do
     case value |> binary_state() do
-      true -> on_state
-      false -> off_state
+      true -> "active"
+      false -> "inactive"
     end
   end
 
   defp state(%{type: "numeric", range: %{min: _min, max: _max}} = characteristic, value) do
+    case numeric_to_scale(characteristic, value) do
+      p when p < 0.3334 -> "low"
+      p when p >= 0.6667 -> "high"
+      _ -> "medium"
+    end
+  end
+
+  defp state(%{type: "percentage"} = characteristic, value) do
     case numeric_to_scale(characteristic, value) do
       p when p < 0.3334 -> "low"
       p when p >= 0.6667 -> "high"
@@ -245,6 +309,10 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp numeric_to_scale(%{type: "numeric", range: %{min: min, max: max}} = _characteristic, value) do
     value / (max - min)
+  end
+
+  defp numeric_to_scale(%{type: "percentage"} = _characteristic, value) do
+    value / 100.0
   end
 
   defp get_value(nil = _value, _characteristic), do: nil
