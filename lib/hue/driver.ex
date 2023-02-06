@@ -94,10 +94,27 @@ defmodule Hue.Driver do
       when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
-      |> Client.update_light(pin, atomize_keys(parameters))
+      |> Client.update_light(
+           pin,
+           parameters
+           |> atomize_keys()
+           |> convert_brightness()
+         )
 
     {:reply, {:ok, result}, client}
   end
+
+  defp convert_brightness(%{brightness: brightness} = parameters) when is_binary(brightness) do
+    parameters
+    |> Map.put(:brightness, String.to_integer(brightness))
+    |> convert_brightness()
+  end
+
+  defp convert_brightness(%{brightness: brightness} = parameters) when is_number(brightness) do
+    Map.put(parameters, :brightness, brightness * 2.55)
+  end
+
+  defp convert_brightness(%{} = parameters), do: parameters
 
   defp get_device_value(interface, device_infos, state) when is_list(device_infos) do
     Map.new(device_infos, fn %{id: id} = device_info ->
@@ -120,7 +137,7 @@ defmodule Hue.Driver do
       login(host, username)
       |> Client.get_light(pin)
 
-    {:ok, %{"on" => on, "brightness" => Float.ceil(brightness / 2.54)}}
+    {:ok, %{"on" => on, "brightness" => Float.ceil(brightness / 2.55)}}
   end
 
   defp get_device_value(

@@ -51,8 +51,15 @@ defmodule Hue.Light.StateChange do
   end
 
   defp parse_brightness(nil), do: nil
+  defp parse_brightness(brightness) when is_integer(brightness), do: brightness
 
-  defp parse_brightness(brightness) do
+  defp parse_brightness(brightness) when is_float(brightness) do
+    brightness
+    |> Float.round(0)
+    |> Kernel.trunc()
+  end
+
+  defp parse_brightness(brightness) when is_binary(brightness) do
     case Integer.parse(brightness) do
       {value, _} -> value
       :error -> nil
