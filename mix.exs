@@ -52,7 +52,8 @@ defmodule HomeApp.MixProject do
       {:httpoison, "~> 1.8"},
       {:dotenv, "~> 3.0.0"},
       {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]},
-      {:phoenix_sass, "~> 0.1.8"}
+      {:phoenix_sass, "~> 0.1.8"},
+      {:saxy, "~> 1.5"}
     ]
   end
 
