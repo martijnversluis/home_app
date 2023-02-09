@@ -1,9 +1,6 @@
 defmodule Nmap.Xml.Parser do
-  def parse!(filepath) do
-    {:ok, report} =
-      filepath
-      |> File.read!()
-      |> Saxy.parse_string(Nmap.Xml.EventHandler, [])
+  def parse!(xml) do
+    {:ok, report} = Saxy.parse_string(xml, Nmap.Xml.EventHandler, [])
     report
   end
 end
