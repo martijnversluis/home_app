@@ -19,8 +19,7 @@ defmodule Hue.Driver do
           :deactivate,
           %{
             host: host,
-            pin: pin,
-            config: %{username: username},
+            config: %{id: id, username: username},
             device_type: %{id: device_type_id}
           } = _device
         },
@@ -30,7 +29,7 @@ defmodule Hue.Driver do
       when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
-      |> Client.update_light(pin, %{on: false})
+      |> Client.update_light(id, %{on: false})
 
     {:reply, {:ok, result}, client}
   end
@@ -40,8 +39,7 @@ defmodule Hue.Driver do
           :activate,
           %{
             host: host,
-            pin: pin,
-            config: %{username: username},
+            config: %{id: id, username: username},
             device_type: %{id: device_type_id}
           } = _device
         },
@@ -51,7 +49,7 @@ defmodule Hue.Driver do
       when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
-      |> Client.update_light(pin, %{on: true})
+      |> Client.update_light(id, %{on: true})
 
     {:reply, {:ok, result}, client}
   end
@@ -61,8 +59,7 @@ defmodule Hue.Driver do
           :blink,
           %{
             host: host,
-            pin: pin,
-            config: %{username: username},
+            config: %{id: id, username: username},
             device_type: %{id: device_type_id}
           } = _device
         },
@@ -72,7 +69,7 @@ defmodule Hue.Driver do
       when device_type_id in ["hue_light", "hue_go", "hue_outlet"] do
     result =
       login(host, username)
-      |> Client.update_light(pin, %{alert: "lselect"})
+      |> Client.update_light(id, %{alert: "lselect"})
 
     {:reply, {:ok, result}, client}
   end
@@ -82,8 +79,7 @@ defmodule Hue.Driver do
           :change,
           %{
             host: host,
-            pin: pin,
-            config: %{username: username},
+            config: %{id: id, username: username},
             device_type: %{id: device_type_id}
           } = _device,
           %{} = parameters
@@ -95,7 +91,7 @@ defmodule Hue.Driver do
     result =
       login(host, username)
       |> Client.update_light(
-           pin,
+           id,
            parameters
            |> atomize_keys()
            |> convert_brightness()
@@ -126,8 +122,7 @@ defmodule Hue.Driver do
          _interface,
          %{
            host: host,
-           pin: pin,
-           config: %{username: username},
+           config: %{id: id, username: username},
            device_type: %{id: device_type_id}
          } = _device_info,
          _state
@@ -135,7 +130,7 @@ defmodule Hue.Driver do
        when device_type_id in ["hue_light", "hue_go"] do
     %{state: %{"on" => on, "bri" => brightness}} =
       login(host, username)
-      |> Client.get_light(pin)
+      |> Client.get_light(id)
 
     {:ok, %{"on" => on, "brightness" => Float.ceil(brightness / 2.55)}}
   end
@@ -144,15 +139,14 @@ defmodule Hue.Driver do
          _interface,
          %{
            host: host,
-           pin: pin,
-           config: %{username: username},
+           config: %{id: id, username: username},
            device_type: %{id: "hue_outlet"}
          } = _device_info,
          _state
        ) do
     %{state: %{"on" => on}} =
       login(host, username)
-      |> Client.get_light(pin)
+      |> Client.get_light(id)
 
     {:ok, %{"on" => on}}
   end
@@ -161,15 +155,14 @@ defmodule Hue.Driver do
          _interface,
          %{
            host: host,
-           pin: pin,
-           config: %{username: username},
+           config: %{id: id, username: username},
            device_type: %{id: "hue_daylight_sensor"}
          } = _device_info,
          _state
        ) do
     %{state: %{"daylight" => daylight}} =
       login(host, username)
-      |> Client.get_sensor(pin)
+      |> Client.get_sensor(id)
 
     {:ok, %{"on" => daylight}}
   end
@@ -178,8 +171,7 @@ defmodule Hue.Driver do
          _interface,
          %{
            host: host,
-           pin: pin,
-           config: %{username: username},
+           config: %{id: id, username: username},
            device_type: %{id: "hue_dimmer_switch"}
          } = _device_info,
          _state
@@ -190,7 +182,7 @@ defmodule Hue.Driver do
       capabilities: %{"inputs" => inputs}
     } =
       login(host, username)
-      |> Client.get_sensor(pin)
+      |> Client.get_sensor(id)
 
     {
       :ok,
