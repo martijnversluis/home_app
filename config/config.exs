@@ -15,7 +15,8 @@ config :home_app, :device_drivers,
   devantech_eth: DevantechETH.Driver,
   hue: Hue.Driver,
   mqtt_io: MqttIO.Driver,
-  smoov: Smoov.Driver
+  smoov: Smoov.Driver,
+  network_discovery: NetworkDiscovery.Driver
 
 config :home_app, :notifiers, http: HTTPNotifier
 

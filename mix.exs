@@ -20,7 +20,7 @@ defmodule HomeApp.MixProject do
   def application do
     [
       mod: {HomeApp.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :porcelain]
     ]
   end
 
@@ -52,7 +52,9 @@ defmodule HomeApp.MixProject do
       {:httpoison, "~> 1.8"},
       {:dotenv, "~> 3.0.0"},
       {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]},
-      {:phoenix_sass, "~> 0.1.8"}
+      {:phoenix_sass, "~> 0.1.8"},
+      {:saxy, "~> 1.5"},
+      {:porcelain, "~> 2.0"}
     ]
   end
 

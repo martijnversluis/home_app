@@ -10,8 +10,7 @@ defmodule Smoov.Definition do
           location: Characteristic.location(),
           available?: Characteristic.boolean()
         },
-        icon: "plug",
-        id: :smoov_charge_point
+        icon: "plug"
       }
     }
   end
