@@ -109,7 +109,6 @@ defmodule HomeApp.Configuration do
           interface_type: interface.type,
           host: interface.host,
           port: interface.port,
-          pin: device.pin,
           config: Map.merge(device.config, interface.config),
           device_type: device_type,
           characteristic_ids:

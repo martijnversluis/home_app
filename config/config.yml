@@ -48,14 +48,15 @@ devices:
     type: mqtt_io_digital_input
     room: meter_cabinet
     interface: watcher_rpi_1
-    pin: 21
     monitor_hold: true
+    config:
+      pin: 21
   - id: meter_cabinet_temperature
     type: devantech_eth_analogue_input
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 1
     config:
+      pin: 1
       voltage_range:
         min: 0
         max: 1.75
@@ -66,13 +67,14 @@ devices:
     type: devantech_eth_relay
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 1
+    config:
+      pin: 1
   - id: meter_cabinet_motion_sensor
     type: devantech_eth_analogue_input
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 2
     config:
+      pin: 2
       voltage_range:
         min: 0
         max: 3.3
@@ -83,103 +85,123 @@ devices:
     type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 1
     monitor_hold: true
+    config:
+      pin: 1
   - id: meter_cabinet_input_3
     type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 3
+    config:
+      pin: 3
   - id: meter_cabinet_input_4
     type: devantech_eth_digital_input
     room: meter_cabinet
     interface: meter_cabinet_eth
-    pin: 4
+    config:
+      pin: 4
   - id: doorbell_switch
     type: devantech_eth_relay
     room: none
     interface: meter_cabinet_eth
-    pin: 32
+    config:
+      pin: 32
   - id: doorbell
     type: devantech_eth_relay
     room: none
     interface: meter_cabinet_eth
-    pin: 2
+    config:
+      pin: 2
   - id: study_hue_go
     type: hue_go
     room: study
     interface: hue_bridge
-    pin: 9
+    config:
+      id: 9
   - id: living_room_light
     type: hue_light
     room: living_room
     interface: hue_bridge
-    pin: 2
+    config:
+      id: 2
   - id: corridor_light
     type: hue_light
     room: corridor
     interface: hue_bridge
-    pin: 7
+    config:
+      id: 7
   - id: bathroom_light
     type: hue_light
     room: bathroom
     interface: hue_bridge
-    pin: 8
+    config:
+      id: 8
   - id: kitchen_table_light_1
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 19
+    config:
+      id: 19
   - id: kitchen_table_light_2
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 20
+    config:
+      id: 20
   - id: kitchen_table_light_3
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 21
+    config:
+      id: 21
   - id: kitchen_table_light_4
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 22
+    config:
+      id: 22
   - id: kitchen_table_light_5
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 23
+    config:
+      id: 23
   - id: kitchen_table_light_6
     type: hue_light
     room: kitchen
     interface: hue_bridge
-    pin: 24
+    config:
+      id: 24
   - id: hallway_light
     type: hue_light
     room: hallway
     interface: hue_bridge
-    pin: 16
+    config:
+      id: 16
   - id: tv_outlet
     type: hue_outlet
     room: living_room
     interface: hue_bridge
-    pin: 17
+    config:
+      id: 17
   - id: kitchen_counter_lights
     type: hue_outlet
     room: kitchen
     interface: hue_bridge
-    pin: 18
+    config:
+      id: 18
   - id: daylight
     type: hue_daylight_sensor
     room: none
     interface: hue_bridge
-    pin: 1
+    config:
+      id: 1
   - id: hue_dimmer_switch
     type: hue_dimmer_switch
     room: none
     interface: hue_bridge
-    pin: 2
+    config:
+      id: 2
 
 groups:
   - id: kitchen_table_lights

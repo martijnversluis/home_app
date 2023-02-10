@@ -19,7 +19,7 @@ defmodule DevantechETH.Driver do
           _interface,
           %{
             device_type: %{id: "devantech_eth_relay"},
-            pin: pin
+            config: %{pin: pin}
           } = _device
         },
         _,
@@ -34,7 +34,7 @@ defmodule DevantechETH.Driver do
           _interface,
           %{
             device_type: %{id: "devantech_eth_relay"},
-            pin: pin
+            config: %{pin: pin}
           } = _device
         },
         _,
@@ -52,11 +52,11 @@ defmodule DevantechETH.Driver do
   defp get_device_value(
          _interface,
          %{
-           pin: pin,
            device_type: %{
              id: "devantech_eth_analogue_input"
            },
            config: %{
+             pin: pin,
              voltage_range: %{min: min_voltage, max: max_voltage},
              value_range: %{min: min_value, max: max_value}
            }
@@ -77,7 +77,7 @@ defmodule DevantechETH.Driver do
   defp get_device_value(
          _interface,
          %{
-           pin: pin,
+           config: %{pin: pin},
            device_type: %{id: "devantech_eth_relay"}
          } = _device,
          client
@@ -91,7 +91,7 @@ defmodule DevantechETH.Driver do
   defp get_device_value(
          _interface,
          %{
-           pin: pin,
+           config: %{pin: pin},
            device_type: %{id: "devantech_eth_digital_input"}
          } = _device,
          client
