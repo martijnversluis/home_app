@@ -42,8 +42,31 @@ interfaces:
     config:
       charge_points:
         - NLALLEGO013429
+  - id: home_network
+    type: network_discovery
+    polling_interval: 60000
+    config:
+      ip_range: 192.168.1.0/24
 
 devices:
+  - id: iphone_martijn
+    type: network_discovery_network_device
+    interface: home_network
+    room: none
+    config:
+      mac_address: fa:97:e2:b6:69:38
+  - id: work_phone_charlotte
+    type: network_discovery_network_device
+    interface: home_network
+    room: none
+    config:
+      mac_address: 3a:a1:f8:32:73:4a
+  - id: macbook_martijn
+    type: network_discovery_network_device
+    interface: home_network
+    room: none
+    config:
+      mac_address: f4:d4:88:73:95:b8
   - id: mqtt_io_test_port
     type: mqtt_io_digital_input
     room: meter_cabinet

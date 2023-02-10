@@ -1,6 +1,6 @@
 defmodule NetworkDiscovery.Scanner do
-  def scan() do
-    nmap_results = Nmap.Scanner.scan!("192.168.1.0/24")
+  def scan(ip_range) do
+    nmap_results = Nmap.Scanner.scan!(ip_range)
     arp_results = Arp.Scanner.scan!()
 
     nmap_results
