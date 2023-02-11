@@ -59,7 +59,7 @@ defmodule DevantechETH.Driver do
              pin: pin,
              voltage_range: %{min: min_voltage, max: max_voltage},
              value_range: %{min: min_value, max: max_value}
-           }
+           } = device_config
          } = _device,
          client
        ) do
@@ -67,12 +67,22 @@ defmodule DevantechETH.Driver do
       {:ok, voltage} ->
         ratio = voltage / (max_voltage - min_voltage)
         value = min_value + (max_value - min_value) * ratio
-        {:ok, %{"value" => value}}
+
+        {
+          :ok,
+          %{"value" => round_device_value(value, device_config)}
+        }
 
       {:error, error} ->
         {:error, error}
     end
   end
+
+  defp round_device_value(value, %{decimals: decimals} = _device_config) when is_integer(decimals) do
+    Float.round(value, decimals)
+  end
+
+  defp round_device_value(value, %{} = _device_config), do: value
 
   defp get_device_value(
          _interface,

@@ -86,6 +86,7 @@ devices:
       value_range:
         min: -50
         max: 125
+      decimals: 0
   - id: meter_cabinet_relay_1
     type: devantech_eth_relay
     room: meter_cabinet
