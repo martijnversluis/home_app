@@ -39,9 +39,6 @@ interfaces:
   - id: smoov
     type: smoov
     polling_interval: 60000
-    config:
-      charge_points:
-        - NLALLEGO013429
   - id: home_network
     type: network_discovery
     polling_interval: 60000
@@ -49,6 +46,12 @@ interfaces:
       ip_range: 192.168.1.0/24
 
 devices:
+  - id: charge_point_home
+    type: smoov_charge_point
+    room: none
+    interface: smoov
+    config:
+      id: NLALLEGO013429
   - id: iphone_martijn
     type: network_discovery_network_device
     interface: home_network
