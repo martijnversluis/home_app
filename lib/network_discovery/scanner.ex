@@ -22,5 +22,5 @@ defmodule NetworkDiscovery.Scanner do
     |> Map.fetch!(:mac)
   end
 
-  defp resolve_mac(%{mac:  mac}, _arp_results), do: mac
+  defp resolve_mac(%{mac: mac}, _arp_results), do: mac
 end

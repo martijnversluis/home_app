@@ -13,19 +13,22 @@ defmodule Nmap.Xml.EventHandler do
   end
 
   def handle_event(:start_element, {"status", attributes}, %Run{} = run) do
-    run |> update_host(fn host ->
+    run
+    |> update_host(fn host ->
       parse_host_attributes(host, Map.new(attributes))
     end)
   end
 
   def handle_event(:start_element, {"address", attributes}, %Run{} = run) do
-    run |> update_host(fn host ->
+    run
+    |> update_host(fn host ->
       parse_host_address(host, Map.new(attributes))
     end)
   end
 
   def handle_event(:start_element, {"hostname", attributes}, %Run{} = run) do
-    run |> update_host(fn host ->
+    run
+    |> update_host(fn host ->
       parse_hostname(host, Map.new(attributes))
     end)
   end

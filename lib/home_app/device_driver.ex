@@ -9,6 +9,7 @@ defmodule HomeApp.DeviceDriver do
       def init(state) do
         {:ok, state}
       end
+
       defoverridable init: 1
 
       def get_device_value(_interface, _device_info, _state), do: %{}
@@ -21,6 +22,7 @@ defmodule HomeApp.DeviceDriver do
       def get_value(interface, device_info) do
         GenServer.call(name(interface), {:get_value, interface, device_info})
       end
+
       defoverridable get_value: 2
 
       def handle_call({:get_value, interface, device_info}, _, state) do

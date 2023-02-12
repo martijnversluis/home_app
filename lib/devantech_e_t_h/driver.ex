@@ -55,11 +55,12 @@ defmodule DevantechETH.Driver do
            device_type: %{
              id: "devantech_eth_analogue_input"
            },
-           config: %{
-             pin: pin,
-             voltage_range: %{min: min_voltage, max: max_voltage},
-             value_range: %{min: min_value, max: max_value}
-           } = device_config
+           config:
+             %{
+               pin: pin,
+               voltage_range: %{min: min_voltage, max: max_voltage},
+               value_range: %{min: min_value, max: max_value}
+             } = device_config
          } = _device,
          client
        ) do
@@ -78,7 +79,8 @@ defmodule DevantechETH.Driver do
     end
   end
 
-  defp round_device_value(value, %{decimals: decimals} = _device_config) when is_integer(decimals) do
+  defp round_device_value(value, %{decimals: decimals} = _device_config)
+       when is_integer(decimals) do
     Float.round(value, decimals)
   end
 

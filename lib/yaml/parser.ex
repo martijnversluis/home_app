@@ -6,6 +6,7 @@ defmodule YAML.Parser do
 
   def parse!(string) when is_binary(string) do
     string
+    |> EEx.eval_string()
     |> :yamerl_constr.string(@yamerl_opts)
     |> isolate()
     |> normalize()

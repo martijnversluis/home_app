@@ -3,7 +3,7 @@ defmodule NetworkDiscovery.Definition do
 
   def device_types() do
     %{
-      network_device: %DeviceType {
+      network_device: %DeviceType{
         characteristics: %{
           id: Characteristic.string(),
           ip: Characteristic.string(),

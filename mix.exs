@@ -45,7 +45,6 @@ defmodule HomeApp.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.5"},
       {:yaml, "~> 0.1.0"},
       {:timex, "~> 3.7.5"},
@@ -54,7 +53,8 @@ defmodule HomeApp.MixProject do
       {:emqtt, github: "emqx/emqtt", tag: "1.4.7", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]},
       {:phoenix_sass, "~> 0.1.8"},
       {:saxy, "~> 1.5"},
-      {:porcelain, "~> 2.0"}
+      {:porcelain, "~> 2.0"},
+      {:jason, "~> 1.4"}
     ]
   end
 
