@@ -44,8 +44,20 @@ interfaces:
     polling_interval: 60000
     config:
       ip_range: 192.168.1.0/24
+  - id: acv_calendar
+    type: waste_calendar
+    polling_interval: 3600000
+    config:
+      company_code: f8e2844a-095e-48f9-9f98-71fceb51d2c3
 
 devices:
+  - id: acv_waste_calendar
+    type: waste_calendar_waste_calendar
+    room: none
+    interface: acv_calendar
+    config:
+      post_code: <%= System.get_env("ZIP_CODE") %>
+      house_number: <%= System.get_env("HOUSE_NUMBER") %>
   - id: charge_point_home
     type: smoov_charge_point
     room: none
@@ -261,7 +273,7 @@ notifiers:
         <%= System.get_env("SLACK_WEBHOOK") %>
       method: post
       content_type: json
-      body: '{"text": "<%= message %>"}'
+      body: '{"text": "<%%= message %>"}'
 
 automations:
   - id: doorbell_slack_notification

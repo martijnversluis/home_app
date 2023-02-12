@@ -16,7 +16,7 @@ defmodule Arp.Scanner do
   def parse(output) do
     Regex.scan(@regex, output)
     |> Enum.map(fn [_full_match, ip, mac, _, interface] ->
-      %Arp.Result{ ip: ip, mac: mac, interface: interface }
+      %Arp.Result{ip: ip, mac: mac, interface: interface}
     end)
   end
 end

@@ -16,7 +16,8 @@ config :home_app, :device_drivers,
   hue: Hue.Driver,
   mqtt_io: MqttIO.Driver,
   smoov: Smoov.Driver,
-  network_discovery: NetworkDiscovery.Driver
+  network_discovery: NetworkDiscovery.Driver,
+  waste_calendar: WasteCalendar.Driver
 
 config :home_app, :notifiers, http: HTTPNotifier
 

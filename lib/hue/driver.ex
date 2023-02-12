@@ -91,11 +91,11 @@ defmodule Hue.Driver do
     result =
       login(host, username)
       |> Client.update_light(
-           id,
-           parameters
-           |> atomize_keys()
-           |> convert_brightness()
-         )
+        id,
+        parameters
+        |> atomize_keys()
+        |> convert_brightness()
+      )
 
     {:reply, {:ok, result}, client}
   end
@@ -198,7 +198,7 @@ defmodule Hue.Driver do
   end
 
   defp login(host, username) do
-    Client.login(host, EEx.eval_string(username))
+    Client.login(host, username)
   end
 
   defp get_button_event_info(button_event, inputs) do

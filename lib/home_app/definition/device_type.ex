@@ -1,6 +1,6 @@
 defmodule HomeApp.Definition.DeviceType do
   alias HomeApp.Definition.Characteristic
-  defstruct characteristics: [], icon: nil, id: nil
+  defstruct characteristics: [], icon: nil, id: nil, label: nil
 
   def binary_sensor(opts \\ []) do
     [icon: icon] = Keyword.merge([icon: "eye"], opts)

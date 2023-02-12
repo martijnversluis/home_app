@@ -3,6 +3,7 @@ defmodule HomeApp.Definition.Characteristic do
 
   defmodule Types do
     @boolean "boolean"
+    @date "date"
     @enum "enum"
     @location "location"
     @numeric "numeric"
@@ -10,6 +11,7 @@ defmodule HomeApp.Definition.Characteristic do
     @string "string"
 
     def boolean, do: @boolean
+    def date, do: @date
     def enum, do: @enum
     def location, do: @location
     def numeric, do: @numeric
@@ -17,16 +19,17 @@ defmodule HomeApp.Definition.Characteristic do
     def string, do: @string
 
     def all() do
-      [boolean(), enum(), location(), numeric(), percentage(), string()]
+      [boolean(), date(), enum(), location(), numeric(), percentage(), string()]
     end
   end
 
-  def location(opts \\ []), do: new(Types.location(), opts)
-  def string(opts \\ []), do: new(Types.string(), opts)
-  def percentage(opts \\ []), do: new(Types.percentage(), opts)
   def boolean(opts \\ []), do: new(Types.boolean(), opts)
+  def date(opts \\ []), do: new(Types.date(), opts)
   def enum(values, opts \\ []), do: new(Types.enum(), opts |> Keyword.put(:enum_values, values))
+  def location(opts \\ []), do: new(Types.location(), opts)
   def numeric(opts \\ []), do: new(Types.numeric(), opts)
+  def percentage(opts \\ []), do: new(Types.percentage(), opts)
+  def string(opts \\ []), do: new(Types.string(), opts)
 
   def new(type, opts \\ []) do
     options =

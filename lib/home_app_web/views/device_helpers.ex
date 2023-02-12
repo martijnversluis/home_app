@@ -77,16 +77,15 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp device_info(%{id: device_id} = device, %{} = configuration, value) do
-    %{
-      device_type: %{characteristics: characteristics, icon: icon}
-    } = Configuration.get_device_info(configuration, device_id)
+    %{device_type: %{characteristics: characteristics, icon: icon, label: label}} =
+      Configuration.get_device_info(configuration, device_id)
 
     %{
       type: "device",
       icon: icon,
       characteristic: characteristic_id(characteristics),
       state: state(characteristics, value),
-      label: label(device, characteristics, value),
+      label: label(device, characteristics, value, label),
       style: style(device, characteristics, value),
       click_action: click_action(characteristics, value),
       button_icon: button_icon(characteristics, value),
@@ -143,7 +142,7 @@ defmodule HomeAppWeb.DeviceHelpers do
       type: "group",
       click_action: click_action(common_characteristics, grouped_values),
       state: state(common_characteristics, grouped_values),
-      label: label(group, common_characteristics, grouped_values),
+      label: label(group, common_characteristics, grouped_values, nil),
       button_icon: button_icon(common_characteristics, grouped_values),
       characteristics: common_characteristics,
       value: grouped_values
@@ -217,22 +216,99 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp click_action(%{type: "boolean", writable: true}, false = _value), do: "activate"
   defp click_action(%{writable: false}, _value), do: nil
 
-  defp label(device, characteristics, value) when is_list(characteristics) do
+  defp label(device, characteristics, value, label) when is_list(characteristics) do
     characteristic = List.first(characteristics)
-    label(device, characteristic, get_value(value, characteristic))
+    label(device, characteristic, get_value(value, characteristic), label, characteristics, value)
   end
 
-  defp label(%{name: device_name} = _device, %{type: "boolean"} = _characteristic, _value),
-    do: device_name
+  defp label(
+         %{name: device_name} = _device,
+         %{type: "boolean"} = _characteristic,
+         value,
+         label,
+         all_characteristics,
+         all_values
+       )
+       when is_list(label) do
+    Enum.map(label, fn label_part ->
+      format_value_for_label(
+        Enum.find(all_characteristics, fn %{id: id} -> id == label_part end),
+        Map.fetch!(all_values, label_part)
+      )
+    end)
+    |> Enum.join(" ")
+  end
 
-  defp label(%{} = _device, %{type: "numeric"} = _characteristic, nil = _value), do: "-"
-  defp label(%{} = _device, %{type: "string"} = _characteristic, value), do: value
-  defp label(%{} = _device, %{type: "enum"} = _characteristic, value), do: value
+  defp format_value_for_label(%{type: "date"} = characteristic, value) do
+    value
+    |> Timex.to_date()
+    |> format_relative_date()
+  end
+
+  defp format_relative_date(date) do
+    day_diff = Timex.diff(date, Timex.today(), :days)
+
+    cond do
+      day_diff == 0 -> "today"
+      day_diff == 1 -> "tomorrow"
+      day_diff < 7 -> Timex.format!(date, "{WDfull}")
+      day_diff < 366 -> Timex.format!(date, "{D} {Mfull}")
+      true -> Timex.format!(date, "{D} {Mfull} {YYYY}")
+    end
+  end
+
+  defp format_value_for_label(%{} = characteristic, value) do
+    value
+  end
+
+  defp label(
+         %{name: device_name} = _device,
+         %{type: "boolean"} = _characteristic,
+         _value,
+         nil,
+         _all_characteristics,
+         _all_values
+       ) do
+    device_name
+  end
+
+  defp label(
+         %{} = _device,
+         %{type: "numeric"} = _characteristic,
+         nil = _value,
+         _label,
+         _all_characteristics,
+         _all_values
+       ),
+       do: "-"
+
+  defp label(
+         %{} = _device,
+         %{type: "string"} = _characteristic,
+         value,
+         _label,
+         _all_characteristics,
+         _all_values
+       ),
+       do: value
+
+  defp label(
+         %{} = _device,
+         %{type: "enum"} = _characteristic,
+         value,
+         _label,
+         _all_characteristics,
+         _all_values
+       ),
+       do: value
 
   defp label(
          %{} = _device,
          %{type: "numeric", unit: unit, decimals: decimals} = _characteristic,
-         value
+         value,
+         _label,
+         _all_characteristics,
+         _all_values
        ) do
     "#{round_numeric_value(value, decimals)} #{unit}"
   end
@@ -240,12 +316,22 @@ defmodule HomeAppWeb.DeviceHelpers do
   defp label(
          %{} = _device,
          %{type: "percentage"} = _characteristic,
-         value
+         value,
+         _label,
+         _all_characteristics,
+         _all_values
        ) do
     "#{value}%"
   end
 
-  defp label(%{} = _device, %{type: "timestamp"} = _characteristic, value) do
+  defp label(
+         %{} = _device,
+         %{type: "timestamp"} = _characteristic,
+         value,
+         _label,
+         _all_characteristics,
+         _all_values
+       ) do
     "#{value}"
     |> Timex.parse!("{s-epoch}")
     |> Timex.format!("{relative}", :relative)

@@ -18,7 +18,8 @@ defmodule HomeApp.DeviceStateChangeMonitor do
     previous_state = DeviceStateAgent.get_device_state(device_id)
 
     case previous_state do
-      ^new_state -> new_state
+      ^new_state ->
+        new_state
 
       _ ->
         IO.inspect(new_state, label: "state for #{device_id} CHANGED")
