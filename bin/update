@@ -9,8 +9,8 @@ cd $base_dir
 source .env
 git pull
 mix deps.get
-(yes | mix local.hex --force)
-(yes | mix local.rebar --force)
+mix local.hex --force
+mix local.rebar --force
 mix compile
 npm install --prefix ./assets
 npm run deploy --prefix ./assets
