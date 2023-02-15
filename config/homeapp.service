@@ -6,6 +6,8 @@ Wants=network-online.target nginx.service
 [Service]
 Restart=always
 Type=simple
+User=homeapp
+Group=homeapp
 WorkingDirectory=/home/homeapp/home_app
 ExecStart=/home/homeapp/home_app/bin/server
 Environment='PATH="$PATH:/usr/bin"' 'HOME=/home/homeapp'
