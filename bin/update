@@ -5,14 +5,14 @@ set -o nounset
 set -o pipefail
 
 base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && pwd )"
-cd $base_dir && \
- source .env && \
-git pull && \
-mix deps.get && \
-yes | mix local.hex --force && \
-yes | mix local.rebar --force && \
-mix compile && \
-npm install --prefix ./assets && \
-npm run deploy --prefix ./assets && \
-mix phx.digest && \
+cd $base_dir
+source .env
+git pull
+mix deps.get
+(yes | mix local.hex --force)
+(yes | mix local.rebar --force)
+mix compile
+npm install --prefix ./assets
+npm run deploy --prefix ./assets
+mix phx.digest
 systemctl restart homeapp
