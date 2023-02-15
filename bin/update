@@ -1,7 +1,6 @@
 #!/bin/bash
 
 base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && pwd )"
-. "$ASDF_DIR/asdf.sh"
 cd $base_dir
 source .env
 git pull

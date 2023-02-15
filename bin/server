@@ -1,7 +1,6 @@
 #!/bin/bash
 
 base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && pwd )"
-. "$ASDF_DIR/asdf.sh"
 cd $base_dir
 source .env
 SECRET_KEY_BASE="${SECRET_KEY_BASE}" PORT=4000 MIX_ENV=prod mix phx.server
