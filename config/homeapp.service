@@ -8,7 +8,7 @@ Restart=always
 Type=simple
 WorkingDirectory=/home/homeapp/home_app
 ExecStart=/home/homeapp/home_app/bin/server
-Environment='PATH="$PATH"' 'HOME=/home/homeapp'
+Environment='PATH="$PATH:/usr/bin"' 'HOME=/home/homeapp'
 
 [Install]
 WantedBy=multi-user.target
