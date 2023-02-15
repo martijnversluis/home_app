@@ -1,0 +1,14 @@
+[Unit]
+Description=HomeApp Phoenix server
+After=network.target
+Wants=network-online.target nginx.service
+
+[Service]
+Restart=always
+Type=simple
+WorkingDirectory=/home/homeapp/home_app
+ExecStart=/home/homeapp/home_app/bin/server
+Environment='ASDF_DIR=/home/homeapp/.asdf/' 'ASDF_DATA_DIR=/home/homeapp/.asdf/' 'HOME=/home/homeapp'
+
+[Install]
+WantedBy=multi-user.target
