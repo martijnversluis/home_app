@@ -1,0 +1,9 @@
+#!/bin/bash
+
+base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && pwd )"
+cd $base_dir
+vim .env
+sudo cp config/homeapp.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable homeapp
+./bin/update

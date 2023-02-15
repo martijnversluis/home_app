@@ -1,5 +1,9 @@
 # HomeApp
 
+## Install:
+
+    git clone https://github.com/martijnversluis/home_app.git && home_app/bin/install 
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
