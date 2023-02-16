@@ -44,6 +44,11 @@ defmodule Smoov.Client do
     body
     |> Jason.decode!()
     |> process_response()
+
+    case Jason.decode(body) do
+      {:ok, data} -> process_response(data)
+      {:error, _} -> {:error, "No valid JSON"}
+    end
   end
 
   defp process_response({:error, %HTTPoison.Error{reason: reason}}) do

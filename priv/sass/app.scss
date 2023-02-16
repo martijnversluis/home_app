@@ -1,4 +1,4 @@
-@import "../node_modules/nprogress/nprogress.css";
+@import "../../assets/node_modules/nprogress/nprogress";
 @import url("https://unicons.iconscout.com/release/v3.0.6/css/line.css");
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
 
@@ -48,12 +48,12 @@ $wrapper-width: 2000px;
 
 @font-face {
   font-family: 'Gidolinya-Regular';
-  src: url('../static/fonts/Gidolinya-Regular.eot');
-  src: url('../static/fonts/Gidolinya-Regular.eot?#iefix') format('embedded-opentype'),
-  url('../static/fonts/Gidolinya-Regular.svg#Gidolinya-Regular') format('svg'),
-  url('../static/fonts/Gidolinya-Regular.ttf') format('truetype'),
-  url('../static/fonts/Gidolinya-Regular.woff') format('woff'),
-  url('../static/fonts/Gidolinya-Regular.woff2') format('woff2');
+  src: url('../../assets/static/fonts/Gidolinya-Regular.eot');
+  src: url('../../assets/static/fonts/Gidolinya-Regular.eot?#iefix') format('embedded-opentype'),
+  url('../../assets/static/fonts/Gidolinya-Regular.svg#Gidolinya-Regular') format('svg'),
+  url('../../assets/static/fonts/Gidolinya-Regular.ttf') format('truetype'),
+  url('../../assets/static/fonts/Gidolinya-Regular.woff') format('woff'),
+  url('../../assets/static/fonts/Gidolinya-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }

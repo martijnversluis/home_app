@@ -26,7 +26,7 @@ defmodule WasteCalendar.Driver do
   defp get_next_waste_collection(%{} = dates) do
     dates
     |> Enum.map(fn {waste_type, dates} -> {waste_type, List.first(dates)} end)
-    |> Enum.sort(fn {_waste_type_a, date_a}, {_waste_type_b, date_b} -> date_a > +date_b end)
+    |> Enum.sort(fn {_waste_type_a, date_a}, {_waste_type_b, date_b} -> date_a > date_b end)
     |> List.first()
     |> build_result()
   end
