@@ -9,4 +9,5 @@ cd $base_dir
 source .env
 git pull
 mix deps.get
+npm install --prefix ./assets
 systemctl restart homeapp
