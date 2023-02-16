@@ -8,12 +8,5 @@ base_dir="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" >/dev/null && 
 cd $base_dir
 source .env
 git pull
-mix deps.get --only prod
-mix local.hex --force
-mix local.rebar --force
-MIX_ENV=prod mix compile
-npm install --prefix ./assets
-#npm run deploy --prefix ./assets
-MIX_ENV=prod mix assets.deploy
-mix phx.digest
+mix deps.get
 systemctl restart homeapp
