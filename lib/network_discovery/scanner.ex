@@ -17,9 +17,10 @@ defmodule NetworkDiscovery.Scanner do
   end
 
   defp resolve_mac(%{ip: ip, mac: nil}, arp_results) do
-    arp_results
-    |> Enum.find(fn arp_host -> arp_host.ip == ip end)
-    |> Map.fetch!(:mac)
+    case Enum.find(arp_results, fn arp_host -> arp_host.ip == ip end) do
+      %{mac: mac} -> mac
+      _ -> nil
+    end
   end
 
   defp resolve_mac(%{mac: mac}, _arp_results), do: mac
