@@ -12,6 +12,7 @@ defmodule HomeApp.Configuration.Characteristic do
     field(:type, :string)
     field(:decimals, :integer, default: nil)
     field(:enum_values, {:array, :string}, default: [])
+    field(:currency, :string, default: nil)
     embeds_one(:range, NumericRange)
     embeds_one(:values, BinaryValues)
     embeds_one(:states, BinaryStates)
@@ -19,7 +20,7 @@ defmodule HomeApp.Configuration.Characteristic do
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals],
+    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals, :enum_values, :currency],
       empty_values: ["", nil]
     )
     |> cast_embed(:range)

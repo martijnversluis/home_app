@@ -48,12 +48,10 @@ defmodule Entsoe.Client do
   end
 
   defp process_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    body
-
-    #    case parse_xml(body) do
-    #      %Entsoe.Document{} = document -> {:ok, document}
-    #      {:error, _} -> {:error, "Parsing XML failed"}
-    #    end
+    case Entsoe.Xml.Parser.parse(body) do
+      {:ok, %Entsoe.Document{} = document} -> {:ok, document}
+      {:error, _} -> {:error, "Parsing XML failed"}
+    end
   end
 
   defp process_response({:error, %HTTPoison.Error{reason: reason}}) do
