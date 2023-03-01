@@ -1,5 +1,5 @@
 defmodule HomeAppWeb.DeviceHelpers do
-  alias HomeApp.Configuration
+  alias HomeApp.{Configuration, MapUtilities}
   import Phoenix.HTML.Tag
 
   def device_control(
@@ -222,7 +222,7 @@ defmodule HomeAppWeb.DeviceHelpers do
   end
 
   defp label(
-         %{name: device_name} = _device,
+         %{name: device_name} = device,
          %{type: "boolean"} = _characteristic,
          value,
          label,
@@ -233,19 +233,23 @@ defmodule HomeAppWeb.DeviceHelpers do
     Enum.map(label, fn label_part ->
       format_value_for_label(
         Enum.find(all_characteristics, fn %{id: id} -> id == label_part end),
-        Map.fetch!(all_values, label_part)
+        Map.fetch!(add_device_info_to_values(device, all_values), label_part)
       )
     end)
     |> Enum.join(" ")
   end
 
-  defp format_value_for_label(%{type: "date"} = characteristic, value) do
-    value
-    |> Timex.to_date()
-    |> format_relative_date()
+  defp add_device_info_to_values(%{} = device, %{} = values) do
+    device
+    |> MapUtilities.stringify_keys()
+    |> Map.merge(values)
   end
 
-  defp format_relative_date(date) do
+  defp format_value_for_label(%{type: "date"} = _characteristic, value) do
+    format_relative_date(value)
+  end
+
+  defp format_relative_date(%Date{} = date) do
     day_diff = Timex.diff(date, Timex.today(), :days)
 
     cond do
@@ -257,7 +261,37 @@ defmodule HomeAppWeb.DeviceHelpers do
     end
   end
 
+  defp format_relative_date(date) do
+    date
+    |> Timex.to_date()
+    |> format_relative_date()
+  end
+
+  defp format_value_for_label(%{type: "date_time"} = _characteristic, value) do
+    "#{format_relative_date(value)} #{format_time(value)}"
+  end
+
+  defp format_time(date_time) do
+    Timex.format!(date_time, "{h24}:{m}")
+  end
+
+  defp format_value_for_label(%{type: "money", currency: currency} = _characteristic, value) do
+    "#{currency_symbol(currency)}#{money_to_string(value)}"
+  end
+
+  defp currency_symbol("euro"), do: "€ "
+  defp currency_symbol("dollar"), do: "$ "
+  defp currency_symbol(_currency), do: ""
+
+  defp money_to_string(value) do
+    :erlang.float_to_binary(value, decimals: 2)
+  end
+
   defp format_value_for_label(%{} = characteristic, value) do
+    value
+  end
+
+  defp format_value_for_label(nil, value) when is_binary(value) do
     value
   end
 

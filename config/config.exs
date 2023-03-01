@@ -12,6 +12,7 @@ import Config
 config :home_app, :yml_config, "config/config.yml"
 
 config :home_app, :device_drivers,
+  cheap_energy: CheapEnergy.Driver,
   devantech_eth: DevantechETH.Driver,
   hue: Hue.Driver,
   mqtt_io: MqttIO.Driver,
