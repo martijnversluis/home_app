@@ -63,17 +63,32 @@ defmodule HomeApp.Configuration do
     end
   end
 
-  def changeset_error_to_string(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-      Enum.reduce(opts, msg, fn {key, value}, acc ->
-        String.replace(acc, "%{#{key}}", to_string(value))
-      end)
+  defp changeset_error_to_string(changeset) do
+    [
+      :rooms,
+      :interfaces,
+      :device_types,
+      :devices,
+      :notifiers,
+      :automations,
+      :groups
+    ]
+    |> Enum.map(fn group ->
+      {
+        group,
+        Map.get(changeset.changes, group)
+        |> Enum.map(fn item ->
+          {
+            Ecto.Changeset.fetch_field!(item, :id),
+            Enum.map(item.errors, fn {field, {error, options}} ->
+              "#{field} #{error}"
+            end)
+          }
+        end)
+        |> Enum.reject(fn {item, errors} -> Enum.empty?(errors) end)
+      }
     end)
-    |> IO.inspect(label: "traversed errors")
-    |> Enum.reduce("", fn {k, v}, acc ->
-      joined_errors = Enum.join(v, "; ")
-      "#{acc}#{k}: #{joined_errors}\n"
-    end)
+    |> Enum.reject(fn {group, errors} -> Enum.empty?(errors) end)
   end
 
   def parse!(attributes) do
@@ -182,7 +197,6 @@ defmodule HomeApp.Configuration do
             device_type
             |> Map.put(:id, "#{driver_name}_#{id}")
             |> characteristics_map_to_list()
-            |> IO.inspect(label: "device_type")
           end)
 
         %{device_types: device_types ++ driver_device_types}
@@ -233,7 +247,6 @@ defmodule HomeApp.Configuration do
         items
         |> Enum.map(fn item -> fetch_field!(item, foreign_key) end)
         |> List.flatten()
-        |> IO.inspect(label: "#{foreign_key} values")
         |> Enum.uniq()
         |> Enum.reject(fn id -> Enum.member?(valid_ids, id) end)
 

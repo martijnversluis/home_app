@@ -1,7 +1,4 @@
 rooms:
-  - id: none
-    name: "General"
-    icon: "home"
   - id: master_bedroom
     icon: "bed"
   - id: study
@@ -58,40 +55,34 @@ interfaces:
 devices:
   - id: cheap_energy_dryer
     type: cheap_energy_cheap_hours
-    room: none
     interface: epex_prices
     config:
       consecutive: true
       hours: 3
   - id: acv_waste_calendar
     type: waste_calendar_waste_calendar
-    room: none
     interface: acv_calendar
     config:
       post_code: <%= System.get_env("ZIP_CODE") %>
       house_number: <%= System.get_env("HOUSE_NUMBER") %>
   - id: charge_point_home
     type: smoov_charge_point
-    room: none
     interface: smoov
     config:
       id: NLALLEGO013429
   - id: iphone_martijn
     type: network_discovery_network_device
     interface: home_network
-    room: none
     config:
       mac_address: fa:97:e2:b6:69:38
   - id: work_phone_charlotte
     type: network_discovery_network_device
     interface: home_network
-    room: none
     config:
       mac_address: 3a:a1:f8:32:73:4a
   - id: macbook_martijn
     type: network_discovery_network_device
     interface: home_network
-    room: none
     config:
       mac_address: f4:d4:88:73:95:b8
   - id: mqtt_io_test_port
@@ -153,13 +144,11 @@ devices:
       pin: 4
   - id: doorbell_switch
     type: devantech_eth_relay
-    room: none
     interface: meter_cabinet_eth
     config:
       pin: 32
   - id: doorbell
     type: devantech_eth_relay
-    room: none
     interface: meter_cabinet_eth
     config:
       pin: 2
@@ -243,13 +232,11 @@ devices:
       id: 18
   - id: daylight
     type: hue_daylight_sensor
-    room: none
     interface: hue_bridge
     config:
       id: 1
   - id: hue_dimmer_switch
     type: hue_dimmer_switch
-    room: none
     interface: hue_bridge
     config:
       id: 2
@@ -266,7 +253,6 @@ groups:
     - kitchen_table_light_5
     - kitchen_table_light_6
   - id: upstairs_lights
-    room: none
     icon: "lightbulb"
     devices:
     - corridor_light

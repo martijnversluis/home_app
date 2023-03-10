@@ -18,7 +18,7 @@ defmodule HomeApp.Configuration.Device do
       [:id, :name, :type, :room, :interface, :monitor_hold, :config],
       empty_values: ["", nil]
     )
-    |> validate_required([:id, :type, :room, :interface])
+    |> validate_required([:id, :type, :interface])
     |> HomeApp.Configuration.ensure_name()
   end
 end

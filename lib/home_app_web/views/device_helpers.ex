@@ -65,7 +65,10 @@ defmodule HomeAppWeb.DeviceHelpers do
         entities
       }
     end)
-    |> Enum.sort_by(fn {room, _devices} -> room.name end)
+    |> Enum.sort_by(fn
+      {nil, _devices} -> nil
+      {room, _devices} -> room.name
+    end)
   end
 
   defp device_infos(%{devices: devices} = configuration, values) do

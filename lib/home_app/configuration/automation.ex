@@ -35,5 +35,5 @@ defmodule HomeApp.Configuration.Automation do
     Map.put(attributes, "value", "#{value}")
   end
 
-  defp stringify_value(%{} = attributes), do: IO.inspect(attributes, label: "attr")
+  defp stringify_value(%{} = attributes), do: attributes
 end

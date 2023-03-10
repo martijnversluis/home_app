@@ -5,8 +5,8 @@
 
         <li class="tiles__item">
           <h2 class="tiles__item__title">
-            <i class="tiles__item__icon uil uil-<%= room.icon %>"></i>
-            <%= room.name %>
+            <i class="tiles__item__icon uil uil-<%= if room, do: room.icon, else: "home" %>"></i>
+            <%= if room, do: room.name, else: "General" %>
           </h2>
 
           <ul class="tiles__item__content room__devices device-list__items">
