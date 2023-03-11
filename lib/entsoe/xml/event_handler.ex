@@ -4,6 +4,10 @@ defmodule Entsoe.Xml.EventHandler do
 
   def handle_event(:start_document, _attributes, state), do: {:ok, state}
 
+  def handle_event(:start_element, {"Acknowledgement_MarketDocument", _attributes}, _state) do
+    {:error, :prices_not_settled}
+  end
+
   def handle_event(:start_element, {"Publication_MarketDocument", _attributes}, _state) do
     {:ok, {%Document{}}}
   end

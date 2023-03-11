@@ -70,8 +70,10 @@ defmodule CheapEnergy.Driver do
   end
 
   defp day_ahead_prices(client, date) do
-    {:ok, document} = Entsoe.Client.day_ahead_prices(client, date)
-    document
+    case Entsoe.Client.day_ahead_prices(client, date) do
+      {:ok, document} -> document
+      {:error, :prices_not_settled} -> %Entsoe.Document{}
+    end
   end
 
   defp filter_past(prices) when is_list(prices) do
