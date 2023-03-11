@@ -15,11 +15,7 @@ defmodule CheapEnergy.Driver do
     Map.new(devices, fn %{id: id, config: %{} = config} ->
       {
         id,
-        {
-          :ok,
-          get_cheap_prices(prices, config)
-          |> stringify_keys()
-        }
+        {:ok, get_cheap_prices(prices, config)}
       }
     end)
   end
@@ -82,4 +78,10 @@ defmodule CheapEnergy.Driver do
     now = Timex.now()
     Enum.reject(prices, fn {date_time, price} -> date_time |> Timex.before?(now) end)
   end
+
+  def name(%{interface: id, interface_type: type, config: %{provider: provider}} = _device_info),
+       do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
+
+  def name(%{id: id, type: type, config: %{provider: provider}} = _interface),
+       do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
 end

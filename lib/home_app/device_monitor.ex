@@ -1,5 +1,5 @@
 defmodule HomeApp.DeviceMonitor do
-  alias HomeApp.{DeviceControl, Event}
+  alias HomeApp.{DeviceControl, Event, MapUtilities}
   use GenServer
 
   def child_spec({driver, %{id: interface_id, type: interface_type} = interface, devices}) do
@@ -33,7 +33,7 @@ defmodule HomeApp.DeviceMonitor do
         {:ok, value} ->
           Event.broadcast(
             HomeApp.PubSub,
-            Event.new("device:state_reported", device_id, value)
+            Event.new("device:state_reported", device_id, MapUtilities.stringify_keys(value))
           )
 
         {:error, description} ->

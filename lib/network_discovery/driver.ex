@@ -10,8 +10,7 @@ defmodule NetworkDiscovery.Driver do
           nil -> %NetworkDiscovery.Device{mac: mac_address, online?: false}
           device -> device
         end
-        |> stringify_keys()
-        |> Map.put("id", id)
+        |> Map.put(:id, id)
 
       {id, {:ok, device_state}}
     end)

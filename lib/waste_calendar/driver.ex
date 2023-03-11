@@ -17,7 +17,6 @@ defmodule WasteCalendar.Driver do
           Ximmio.Client.fetch_address(company_code, post_code, house_number)
           |> Ximmio.Client.get_calendar(company_code, todays_date(), next_weeks_date())
           |> get_next_waste_collection()
-          |> stringify_keys()
         }
       }
     end)

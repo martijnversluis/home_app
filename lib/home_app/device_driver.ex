@@ -30,11 +30,13 @@ defmodule HomeApp.DeviceDriver do
         {:reply, get_device_value(interface, device_info, state), state}
       end
 
-      defp name(%{interface: id, interface_type: type} = _device_info),
+      def name(%{interface: id, interface_type: type} = _device_info),
         do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
 
-      defp name(%{id: id, type: type} = _interface),
+      def name(%{id: id, type: type} = _interface),
         do: String.to_atom("#{__MODULE__}_#{type}_#{id}")
+
+      defoverridable name: 1
 
       def stringify_keys(value), do: MapUtilities.stringify_keys(value)
       def strip_structs(value), do: MapUtilities.strip_structs(value)

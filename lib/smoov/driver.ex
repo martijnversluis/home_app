@@ -5,10 +5,7 @@ defmodule Smoov.Driver do
     Map.new(devices, fn %{id: id, config: %{id: charge_point_id}} ->
       {
         id,
-        {
-          :ok,
-          Smoov.Client.get_charge_point(charge_point_id) |> stringify_keys()
-        }
+        {:ok, Smoov.Client.get_charge_point(charge_point_id)}
       }
     end)
   end
