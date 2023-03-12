@@ -23,7 +23,17 @@ defmodule HomeApp.Definition.Characteristic do
     def string, do: @string
 
     def all() do
-      [boolean(), date(), date_time(), enum(), location(), money(), numeric(), percentage(), string()]
+      [
+        boolean(),
+        date(),
+        date_time(),
+        enum(),
+        location(),
+        money(),
+        numeric(),
+        percentage(),
+        string()
+      ]
     end
   end
 

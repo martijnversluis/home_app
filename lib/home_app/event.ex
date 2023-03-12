@@ -21,6 +21,12 @@ defmodule HomeApp.Event do
     Phoenix.PubSub.subscribe(pub_sub_module, event_type)
   end
 
+  def matches_schedule?(%__MODULE__{time: event_time}, schedule) when is_binary(schedule) do
+    schedule
+    |> Crontab.CronExpression.Parser.parse!()
+    |> Crontab.DateChecker.matches_date?(DateTime.to_naive(event_time))
+  end
+
   defp current_time() do
     Timex.Timezone.convert(Timex.now(), Timex.Timezone.local())
   end
