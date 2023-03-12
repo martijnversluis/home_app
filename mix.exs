@@ -54,7 +54,8 @@ defmodule HomeApp.MixProject do
       {:phoenix_sass, "~> 0.1.8"},
       {:saxy, "~> 1.5"},
       {:porcelain, "~> 2.0"},
-      {:jason, "~> 1.4"}
+      {:jason, "~> 1.4"},
+      {:crontab, "~> 1.1"}
     ]
   end
 

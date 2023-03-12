@@ -20,7 +20,9 @@ defmodule HomeApp.Configuration.Characteristic do
 
   def changeset(struct, attributes) do
     struct
-    |> cast(attributes, [:id, :name, :source, :unit, :writable, :type, :decimals, :enum_values, :currency],
+    |> cast(
+      attributes,
+      [:id, :name, :source, :unit, :writable, :type, :decimals, :enum_values, :currency],
       empty_values: ["", nil]
     )
     |> cast_embed(:range)

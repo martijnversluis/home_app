@@ -12,9 +12,9 @@ defmodule HomeApp.Automator do
     {:ok, {}}
   end
 
-  def handle_info(%Event{} = event, socket) do
+  def handle_info(%Event{} = event, state) do
     handle_event(event)
-    {:noreply, socket}
+    {:noreply, state}
   end
 
   defp handle_event(event) do
@@ -46,6 +46,14 @@ defmodule HomeApp.Automator do
       end)
 
     automation_hours == event_time.hour && automation_minutes == event_time.minute
+  end
+
+  defp should_trigger_automation?(
+         %{event: "schedule", value: schedule} = automation,
+         %Event{type: "clock:tick"} = event
+       )
+  do
+    Event.matches_schedule?(event, schedule)
   end
 
   defp should_trigger_automation?(

@@ -60,7 +60,9 @@ defmodule CheapEnergy.Driver do
   defp today(), do: Date.utc_today()
   defp tomorrow(), do: today() |> Date.add(1)
 
-  defp extract_date_times_with_prices(%Entsoe.Document{period_start: period_start, prices: prices} = document) do
+  defp extract_date_times_with_prices(
+         %Entsoe.Document{period_start: period_start, prices: prices} = document
+       ) do
     Enum.map(prices, fn {position, price} ->
       {
         Timex.add(period_start, Timex.Duration.from_hours(position - 1)),
@@ -82,8 +84,8 @@ defmodule CheapEnergy.Driver do
   end
 
   def name(%{interface: id, interface_type: type, config: %{provider: provider}} = _device_info),
-       do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
+    do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
 
   def name(%{id: id, type: type, config: %{provider: provider}} = _interface),
-       do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
+    do: String.to_atom("#{__MODULE__}_#{type}_#{id}_#{provider}")
 end

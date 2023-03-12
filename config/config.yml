@@ -48,7 +48,7 @@ interfaces:
       company_code: f8e2844a-095e-48f9-9f98-71fceb51d2c3
   - id: epex_prices
     type: cheap_energy
-    polling_interval: 3600000
+    schedule: @hourly
     config:
       token: <%= System.get_env("ENTSOE_TOKEN") %>
 
