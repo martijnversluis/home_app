@@ -35,7 +35,7 @@ defmodule Entsoe.Xml.EventHandler do
   def handle_event(
         :start_element,
         {element_name, _attributes},
-        {%Document{} = document, [step, :ignore]} = state
+        {%Document{} = document, [step, :ignore]} = _state
       )
       when element_name in ["start", "end"] do
     {:ok, {document, [step, :ignore]}}
@@ -155,6 +155,6 @@ defmodule Entsoe.Xml.EventHandler do
   end
 
   def handle_event(:end_element, _element_name, state), do: {:ok, state}
-  def handle_event(:characters, characters, state), do: {:ok, state}
+  def handle_event(:characters, _characters, state), do: {:ok, state}
   def handle_event(:end_document, _, {%Document{} = document, _}), do: {:ok, document}
 end

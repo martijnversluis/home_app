@@ -42,7 +42,7 @@ defmodule HomeApp.Configuration do
     case File.read(filename) do
       {:ok, yaml} ->
         yaml
-        |> YAML.Parser.parse!()
+        |> YAML.BinaryParser.parse!()
         |> keys_to_atoms()
         |> merge_driver_info()
         |> strip_structs()
@@ -80,15 +80,15 @@ defmodule HomeApp.Configuration do
         |> Enum.map(fn item ->
           {
             Ecto.Changeset.fetch_field!(item, :id),
-            Enum.map(item.errors, fn {field, {error, options}} ->
+            Enum.map(item.errors, fn {field, {error, _options}} ->
               "#{field} #{error}"
             end)
           }
         end)
-        |> Enum.reject(fn {item, errors} -> Enum.empty?(errors) end)
+        |> Enum.reject(fn {_item, errors} -> Enum.empty?(errors) end)
       }
     end)
-    |> Enum.reject(fn {group, errors} -> Enum.empty?(errors) end)
+    |> Enum.reject(fn {_group, errors} -> Enum.empty?(errors) end)
   end
 
   def parse!(attributes) do

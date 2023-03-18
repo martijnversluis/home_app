@@ -49,10 +49,9 @@ defmodule HomeApp.Automator do
   end
 
   defp should_trigger_automation?(
-         %{event: "schedule", value: schedule} = automation,
+         %{event: "schedule", value: schedule} = _automation,
          %Event{type: "clock:tick"} = event
-       )
-  do
+       ) do
     Event.matches_schedule?(event, schedule)
   end
 

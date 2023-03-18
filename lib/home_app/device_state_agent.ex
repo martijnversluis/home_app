@@ -15,7 +15,5 @@ defmodule HomeApp.DeviceStateAgent do
     Agent.get(__MODULE__, fn states -> Map.get(states, device_id) end)
   end
 
-  def name() do
-    Agent.agent()
-  end
+  def name(), do: __MODULE__
 end

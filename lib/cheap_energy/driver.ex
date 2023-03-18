@@ -2,15 +2,12 @@ defmodule CheapEnergy.Driver do
   use HomeApp.DeviceDriver
 
   defp get_device_value(
-         %{config: %{token: token}} = _interface,
+         %{config: %{token: token, provider: provider}} = _interface,
          devices,
          _state
        )
        when is_list(devices) do
-    client = Entsoe.Client.new(token)
-    prices = get_prices(client, today()) ++ get_prices(client, tomorrow())
-
-    IO.inspect(prices, label: "ALL PRICES")
+    prices = day_ahead_prices(provider, token) |> parse_date_times() |> filter_past()
 
     Map.new(devices, fn %{id: id, config: %{} = config} ->
       {
@@ -27,21 +24,21 @@ defmodule CheapEnergy.Driver do
       sum_price =
         prices
         |> Enum.slice(index, 3)
-        |> Enum.map(fn {date_time, price} -> price end)
+        |> Enum.map(fn {_date_time, price} -> price end)
         |> Enum.sum()
 
       mean_price = Float.round(sum_price / hours / 1000, 2)
       date_time = prices |> Enum.at(index) |> elem(0)
       {date_time, mean_price}
     end)
-    |> Enum.min_by(fn {date_time, mean_price} -> mean_price end)
+    |> Enum.min_by(fn {_date_time, mean_price} -> mean_price end)
     |> to_price_map(hours)
   end
 
   def to_price_map({date_time, mean_price}, hours) do
     %{
       active: price_active?(date_time, hours),
-      date_time: date_time,
+      date_time: Timex.format!(date_time, "{RFC3339}"),
       price: mean_price
     }
   end
@@ -51,17 +48,29 @@ defmodule CheapEnergy.Driver do
     Timex.between?(Timex.now(), start_date_time, end_date_time)
   end
 
-  defp get_prices(%Entsoe.Client{} = client, date) do
-    day_ahead_prices(client, date)
-    |> extract_date_times_with_prices()
-    |> filter_past()
-  end
-
   defp today(), do: Date.utc_today()
   defp tomorrow(), do: today() |> Date.add(1)
 
-  defp extract_date_times_with_prices(
-         %Entsoe.Document{period_start: period_start, prices: prices} = document
+  defp day_ahead_prices("entsoe", token) do
+    client = Entsoe.Client.new(token)
+    day_ahead_prices(client, today()) ++ day_ahead_prices(client, tomorrow())
+  end
+
+  defp day_ahead_prices(%Entsoe.Client{} = client, date) do
+    case Entsoe.Client.day_ahead_prices(client, date) do
+      {:ok, document} -> extract_entsoe_date_times_with_prices(document)
+      {:error, :prices_not_settled} -> %Entsoe.Document{}
+    end
+  end
+
+  defp day_ahead_prices("tibber", token) do
+    case Tibber.Client.new(token) |> Tibber.Client.prices() do
+      {:ok, prices} -> prices
+    end
+  end
+
+  defp extract_entsoe_date_times_with_prices(
+         %{period_start: period_start, prices: prices} = _document
        ) do
     Enum.map(prices, fn {position, price} ->
       {
@@ -71,16 +80,28 @@ defmodule CheapEnergy.Driver do
     end)
   end
 
-  defp day_ahead_prices(client, date) do
-    case Entsoe.Client.day_ahead_prices(client, date) do
-      {:ok, document} -> document
-      {:error, :prices_not_settled} -> %Entsoe.Document{}
-    end
+  defp parse_date_times(%{} = prices) do
+    Map.new(prices, fn
+      {%{} = date_time, price} ->
+        {date_time, price}
+      {date_time, price} ->
+        {
+          date_time
+          |> IO.inspect(label: "parse date time")
+          |> Timex.parse!("{RFC3339}"),
+          price
+        }
+    end)
+  end
+
+  defp filter_past(%{} = prices) do
+    Enum.map(prices, fn pair -> pair end)
+    |> filter_past()
   end
 
   defp filter_past(prices) when is_list(prices) do
     now = Timex.now()
-    Enum.reject(prices, fn {date_time, price} -> date_time |> Timex.before?(now) end)
+    Enum.reject(prices, fn {date_time, _price} -> date_time |> Timex.before?(now) end)
   end
 
   def name(%{interface: id, interface_type: type, config: %{provider: provider}} = _device_info),
