@@ -20,7 +20,6 @@ defmodule HomeApp.DeviceMonitorSupervisor do
       driver = DeviceControl.get_driver!(interface_type)
       acc ++ monitor_config(driver, interface, devices) ++ driver_config(driver, interface)
     end)
-    |> IO.inspect(label: "monitor children")
   end
 
   defp monitor_config(driver, interface, devices) do

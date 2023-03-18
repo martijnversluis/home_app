@@ -40,13 +40,24 @@ defmodule HomeApp.DeviceMonitor do
 
   def handle_info(:update, state), do: update_devices(state)
 
+  def handle_info(
+        %Event{type: "clock:tick"} = event,
+        {_driver, %{schedule: schedule} = _interface, _devices} = state
+      ) do
+    if Event.matches_schedule?(event, schedule) do
+      update_devices(state)
+    end
+
+    {:noreply, state}
+  end
+
   def update_devices({_driver, interface, devices} = state) do
     for {device_id, response} <- DeviceControl.get_value(interface, devices) do
       case response do
         {:ok, value} ->
           Event.broadcast(
             HomeApp.PubSub,
-            Event.new("device:state_reported", device_id, MapUtilities.stringify_keys(value))
+            Event.new("device:state_reported", device_id, stringify_keys(value))
           )
 
         {:error, description} ->
@@ -57,14 +68,12 @@ defmodule HomeApp.DeviceMonitor do
     {:noreply, state}
   end
 
-  def handle_info(
-        %Event{type: "clock:tick"} = event,
-        {_driver, %{schedule: schedule} = interface, _devices} = state
-      ) do
-    if Event.matches_schedule?(event, schedule) do
-      update_devices(state)
-    end
-
-    {:noreply, state}
+  defp stringify_keys(%{} = map) do
+    map
+    |> MapUtilities.strip_structs()
+    |> Enum.map(fn {key, value} ->
+      {"#{key}", value}
+    end)
+    |> Map.new()
   end
 end

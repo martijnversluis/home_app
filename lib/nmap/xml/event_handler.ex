@@ -3,7 +3,7 @@ defmodule Nmap.Xml.EventHandler do
   alias Nmap.Run
   alias Nmap.Run.{Host}
 
-  def handle_event(:start_document, attributes, _state), do: {:ok, %Run{}}
+  def handle_event(:start_document, _attributes, _state), do: {:ok, %Run{}}
 
   def handle_event(:start_element, {"host", _attributes}, %{hosts: hosts} = run) do
     {

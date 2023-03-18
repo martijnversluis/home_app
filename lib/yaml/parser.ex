@@ -1,4 +1,4 @@
-defmodule YAML.Parser do
+defmodule YAML.BinaryParser do
   defmodule TagTest do
   end
 

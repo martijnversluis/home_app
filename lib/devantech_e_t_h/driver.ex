@@ -43,12 +43,6 @@ defmodule DevantechETH.Driver do
     {:reply, Client.set_relay_off(client, pin), client}
   end
 
-  defp get_device_value(interface, device_infos, state) when is_list(device_infos) do
-    Map.new(device_infos, fn %{id: id} = device_info ->
-      {id, get_device_value(interface, device_info, state)}
-    end)
-  end
-
   defp get_device_value(
          _interface,
          %{
@@ -79,12 +73,11 @@ defmodule DevantechETH.Driver do
     end
   end
 
-  defp round_device_value(value, %{decimals: decimals} = _device_config)
-       when is_integer(decimals) do
-    Float.round(value, decimals)
+  defp get_device_value(interface, device_infos, state) when is_list(device_infos) do
+    Map.new(device_infos, fn %{id: id} = device_info ->
+      {id, get_device_value(interface, device_info, state)}
+    end)
   end
-
-  defp round_device_value(value, %{} = _device_config), do: value
 
   defp get_device_value(
          _interface,
@@ -113,4 +106,11 @@ defmodule DevantechETH.Driver do
       {:error, error} -> {:error, error}
     end
   end
+
+  defp round_device_value(value, %{decimals: decimals} = _device_config)
+       when is_integer(decimals) do
+    Float.round(value, decimals)
+  end
+
+  defp round_device_value(value, %{} = _device_config), do: value
 end

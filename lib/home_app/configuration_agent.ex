@@ -6,7 +6,6 @@ defmodule HomeApp.ConfigurationAgent do
       fn ->
         Application.get_env(:home_app, :yml_config)
         |> HomeApp.Configuration.load!()
-        |> IO.inspect(label: "loaded configuration")
       end,
       name: __MODULE__
     )
@@ -20,7 +19,5 @@ defmodule HomeApp.ConfigurationAgent do
     Agent.get(__MODULE__, fn configuration -> configuration end)
   end
 
-  def name() do
-    Agent.agent()
-  end
+  def name(), do: __MODULE__
 end

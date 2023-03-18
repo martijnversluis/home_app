@@ -252,6 +252,32 @@ defmodule HomeAppWeb.DeviceHelpers do
     format_relative_date(value)
   end
 
+
+  defp format_value_for_label(%{type: "date_time"} = _characteristic, value) do
+    IO.inspect(value, label: "format date_time for label")
+    date = format_relative_date(value)
+    time = format_time(value)
+    "#{date} #{time}"
+  end
+
+  defp format_value_for_label(%{type: "money", currency: currency} = _characteristic, value) do
+    "#{currency_symbol(currency)}#{money_to_string(value)}"
+  end
+
+  defp format_value_for_label(%{} = characteristic, value) do
+    value
+  end
+
+  defp format_value_for_label(nil, value) when is_binary(value) do
+    value
+  end
+
+  defp format_relative_date(date_string) when is_binary(date_string) do
+    date_string
+    |> Timex.parse!("{RFC3339}")
+    |> format_relative_date()
+  end
+
   defp format_relative_date(%Date{} = date) do
     day_diff = Timex.diff(date, Timex.today(), :days)
 
@@ -264,22 +290,20 @@ defmodule HomeAppWeb.DeviceHelpers do
     end
   end
 
-  defp format_relative_date(date) do
+  defp format_relative_date(%{} = date) do
     date
     |> Timex.to_date()
     |> format_relative_date()
   end
 
-  defp format_value_for_label(%{type: "date_time"} = _characteristic, value) do
-    "#{format_relative_date(value)} #{format_time(value)}"
+  defp format_time(date_string) when is_binary(date_string) do
+    date_string
+    |> Timex.parse!("{ISOdate}T{ISOtime}{Z:}")
+    |> format_time()
   end
 
   defp format_time(date_time) do
     Timex.format!(date_time, "{h24}:{m}")
-  end
-
-  defp format_value_for_label(%{type: "money", currency: currency} = _characteristic, value) do
-    "#{currency_symbol(currency)}#{money_to_string(value)}"
   end
 
   defp currency_symbol("euro"), do: "€ "
@@ -288,14 +312,6 @@ defmodule HomeAppWeb.DeviceHelpers do
 
   defp money_to_string(value) do
     :erlang.float_to_binary(value, decimals: 2)
-  end
-
-  defp format_value_for_label(%{} = characteristic, value) do
-    value
-  end
-
-  defp format_value_for_label(nil, value) when is_binary(value) do
-    value
   end
 
   defp label(

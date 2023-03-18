@@ -46,16 +46,17 @@ interfaces:
     polling_interval: 3600000
     config:
       company_code: f8e2844a-095e-48f9-9f98-71fceb51d2c3
-  - id: epex_prices
+  - id: tibber_prices
     type: cheap_energy
     schedule: @hourly
     config:
-      token: <%= System.get_env("ENTSOE_TOKEN") %>
+      provider: tibber
+      token: <%= System.get_env("TIBBER_TOKEN") %>
 
 devices:
-  - id: cheap_energy_dryer
+  - id: cheap_energy_3_hours_consecutive
     type: cheap_energy_cheap_hours
-    interface: epex_prices
+    interface: tibber_prices
     config:
       consecutive: true
       hours: 3
@@ -218,9 +219,9 @@ devices:
     interface: hue_bridge
     config:
       id: 16
-  - id: tv_outlet
+  - id: dishwasher_outlet
     type: hue_outlet
-    room: living_room
+    room: kitchen
     interface: hue_bridge
     config:
       id: 17
@@ -343,3 +344,8 @@ automations:
     value: 3
     action: deactivate
     target: kitchen_table_lights
+  - id: turn_on_dishwasher_on_low_prices
+    event: activated
+    subject: cheap_energy_3_hours_consecutive
+    action: activate
+    target: dishwasher_outlet

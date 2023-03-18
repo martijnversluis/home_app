@@ -1,5 +1,4 @@
 defmodule HomeApp.Configuration.Interface do
-  alias Ecto.Changeset
   use HomeApp.Configuration.Schema
 
   schema "" do

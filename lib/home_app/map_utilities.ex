@@ -14,17 +14,17 @@ defmodule HomeApp.MapUtilities do
 
   def stringify_keys(value), do: value
 
-  defp strip_structs(list) when is_list(list) do
+  def strip_structs(list) when is_list(list) do
     Enum.map(list, &strip_structs/1)
   end
 
-  defp strip_structs(%_{} = struct) do
+  def strip_structs(%_{} = struct) do
     Map.from_struct(struct) |> Map.delete(:__meta__) |> strip_structs()
   end
 
-  defp strip_structs(%{} = map) do
+  def strip_structs(%{} = map) do
     Map.new(map, fn {key, value} -> {key, strip_structs(value)} end)
   end
 
-  defp strip_structs(value), do: value
+  def strip_structs(value), do: value
 end
